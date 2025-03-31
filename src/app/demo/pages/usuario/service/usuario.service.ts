@@ -15,10 +15,10 @@ export class UsuarioService {
   }
 
   testService() {
-    this.backendService.get(environment.apiUrlAuth, this.api, "test");
+    this.backendService.get(environment.apiUrl, this.api, "test");
   }
 
   getUsuarios(): Observable<Usuario[]> {
-    return this.backendService.get(environment.apiUrlAuth, this.api, "listar");
+    return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
 }
