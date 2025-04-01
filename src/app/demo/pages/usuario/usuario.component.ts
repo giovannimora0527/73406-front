@@ -122,9 +122,8 @@ export class UsuarioComponent {
           ...this.usuarioSelected, // Mantener los valores anteriores
           ...this.form.getRawValue() // Sobrescribir con los valores del formulario
         };
-        this.usuarioSelected.idUsuario = idUsuario;
-        console.log(this.usuarioSelected);
-        this.usuarioService.actualizarUsuario(this.form.getRawValue())
+        this.usuarioSelected.idUsuario = idUsuario;       
+        this.usuarioService.actualizarUsuario(this.usuarioSelected)
         .subscribe({
           next: (data) => {
             console.log(data);
