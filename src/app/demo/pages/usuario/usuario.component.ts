@@ -20,7 +20,7 @@ export class UsuarioComponent {
   modoFormulario: string = '';
   titleModal: string = '';
 
-  usuarioSelected: Usuario;
+  usuarioSelected: Usuario = {} as Usuario;
 
   form: FormGroup = new FormGroup({
     nombreCompleto: new FormControl(''),
@@ -117,12 +117,12 @@ export class UsuarioComponent {
       } else {
         console.log('Actualizamos un usuario existente');
         // Actualizar solo los campos específicos
-        const idUsuario = this.usuarioSelected.idUsuario;
+        const idUsuario = this.usuarioSelected.UsuarioId;
         this.usuarioSelected = {
           ...this.usuarioSelected, // Mantener los valores anteriores
           ...this.form.getRawValue() // Sobrescribir con los valores del formulario
         };
-        this.usuarioSelected.idUsuario = idUsuario;       
+        this.usuarioSelected.UsuarioId = idUsuario;       
         this.usuarioService.actualizarUsuario(this.usuarioSelected)
         .subscribe({
           next: (data) => {

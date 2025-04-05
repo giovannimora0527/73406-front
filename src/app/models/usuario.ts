@@ -1,6 +1,6 @@
 export class Usuario {
-    idUsuario?: number;
-    nombre: string;
+    UsuarioId?: number;
+    nombre!: string;
     correo: string;
     telefono?: string;
     fechaRegistro?: Date;
