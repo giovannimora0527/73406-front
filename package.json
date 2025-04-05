@@ -30,6 +30,7 @@
     "@ng-bootstrap/ng-bootstrap": "18.0.0",
     "@popperjs/core": "2.11.8",
     "apexcharts": "3.49.2",
+    "boostrap": "^2.0.0",
     "bootstrap": "^5.3.3",
     "ngx-bootstrap": "^19.0.2",
     "ngx-scrollbar": "16.1.1",
