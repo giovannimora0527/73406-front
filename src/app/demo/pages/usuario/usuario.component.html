@@ -83,16 +83,16 @@
       <div class="modal-body">
         <form [formGroup]="form">
           <div class="mb-3">
-            <label for="nombreCompleto" class="form-label">Nombre Completo</label>
+            <label for="nombre" class="form-label">Nombre Completo</label>
             <input
               type="text"
-              formControlName="nombreCompleto"
+              formControlName="nombre"
               class="form-control"
-              id="nombreCompleto"
+              id="nombre"
               placeholder="Ingrese el nombre completo"
               [ngModel]="usuarioSelected?.nombre"
             />
-            <div *ngIf="form.get('nombreCompleto')?.hasError('required') && form.get('nombreCompleto')?.touched" class="text-danger">
+            <div *ngIf="form.get('nombre')?.hasError('required') && form.get('nombre')?.touched" class="text-danger">
               El nombre completo es requerido.
             </div>
           </div>
@@ -116,6 +116,15 @@
             <div *ngIf="form.get('telefono')?.hasError('required') && form.get('telefono')?.touched" class="text-danger">
               El teléfono es requerido.
             </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="activo" class="form-label">Estado</label>
+            <select class="form-control" id="activo"
+            formControlName="activo">              
+              <option [value]="true">Activo</option>
+              <option [value]="false">Inactivo</option>
+            </select>
           </div>
         </form>
       </div>
