@@ -45,6 +45,14 @@ export const NavigationItems: NavigationItem[] = [
         icon: 'feather icon-user',
         classes: 'nav-item'
       },
+      {
+        id: 'prestamos',
+        title: 'Gestión de Prestamos',
+        type: 'item',
+        url: '/inicio/prestamos',
+        icon: 'feather icon-user',
+        classes: 'nav-item'
+      },
     ]
   },
 

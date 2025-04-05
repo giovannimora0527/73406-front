@@ -4,6 +4,7 @@ import { AdminComponent } from './theme/layout/admin/admin.component';
 import { UsuarioComponent } from './demo/pages/usuario/usuario.component';
 import { AutorComponent } from './demo/pages/autor/autor.component';
 import { LibrosComponent } from './libros/libros.component';
+import { PrestamosComponent } from './prestamos/prestamos.component';
 export const routes: Routes = [
   {
     path: '',
@@ -17,7 +18,9 @@ export const routes: Routes = [
     children: [      
       { path: 'usuarios', component: UsuarioComponent, data: { title: 'Usuarios' }},
       { path: 'autores', component: AutorComponent, data: { title: 'Autores' }},     
-      {path : 'libros', component: LibrosComponent, data: { title: 'Libros' }}
+      {path : 'libros', component: LibrosComponent, data: { title: 'Libros' }},
+      {path : 'prestamos', component: PrestamosComponent, data: { title: 'Prestamos' }}
+
     ]
   },
   { path: '**', redirectTo: 'inicio' }
