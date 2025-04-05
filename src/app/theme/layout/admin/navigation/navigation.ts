@@ -41,15 +41,15 @@ export const NavigationItems: NavigationItem[] = [
         id: 'libro',
         title: 'Gestión de Libros',
         type: 'item',
-        url: '/inicio/libros',
+        url: '/inicio/libro',
         icon: 'feather icon-user',
         classes: 'nav-item'
       },
       {
         id: 'prestamo',
-        title: 'Gestión de Prestamo',
+        title: 'Gestión de Prestamos',
         type: 'item',
-        url: '/inicio/prestamos',
+        url: '/inicio/prestamo',
         icon: 'feather icon-user',
         classes: 'nav-item'
       }
