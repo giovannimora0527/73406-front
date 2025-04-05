@@ -26,7 +26,7 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Gestión de Usuarios',
         type: 'item',
         url: '/inicio/usuarios',
-        icon: 'feather icon-user',
+        icon: 'feather icon-users',
         classes: 'nav-item'
       },
       {
@@ -42,7 +42,7 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Gestión de Libros',
         type: 'item',
         url: '/inicio/libro',
-        icon: 'feather icon-user',
+        icon: 'feather icon-book',
         classes: 'nav-item'
       },
       {
@@ -50,7 +50,7 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Gestión de Prestamos',
         type: 'item',
         url: '/inicio/prestamo',
-        icon: 'feather icon-user',
+        icon: 'feather icon-refresh-cw',
         classes: 'nav-item'
       }
     ]
