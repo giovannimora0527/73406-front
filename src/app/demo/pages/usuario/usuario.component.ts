@@ -23,10 +23,9 @@ export class UsuarioComponent {
   usuarioSelected: Usuario;
 
   form: FormGroup = new FormGroup({
-    nombre: new FormControl(''),
+    nombreCompleto: new FormControl(''),
     correo: new FormControl(''),
-    telefono: new FormControl(''),
-    activo: new FormControl('')
+    telefono: new FormControl('')
   });
 
   constructor(
@@ -39,10 +38,9 @@ export class UsuarioComponent {
 
   cargarFormulario() {
     this.form = this.formBuilder.group({
-      nombre: ['', [Validators.required]],
+      nombreCompleto: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', [Validators.required]],
-      activo: [true, [Validators.required]],
+      telefono: ['', [Validators.required]]
     });
   }
 
@@ -82,26 +80,19 @@ export class UsuarioComponent {
     this.form.markAsPristine();
     this.form.markAsUntouched();
     this.form.reset({
-      nombre: '',
+      nombreCompleto: '',
       correo: '',
-      telefono: '',
-      activo: ''
+      telefono: ''
     });
     if (this.modalInstance) {
       this.modalInstance.hide();
     }
-    this.usuarioSelected = null;
   }
 
   abrirModoEdicion(usuario: Usuario) {
     this.crearUsuarioModal('E');
     this.usuarioSelected = usuario;
-    this.form.patchValue({
-      nombre: this.usuarioSelected.nombre,
-      correo: this.usuarioSelected.correo,
-      telefono: this.usuarioSelected.telefono,
-      activo: !!this.usuarioSelected.activo  // asegura que sea booleano
-    });
+    console.log(this.usuarioSelected);
   }
 
   guardarActualizarUsuario() {   
@@ -132,14 +123,13 @@ export class UsuarioComponent {
           ...this.form.getRawValue() // Sobrescribir con los valores del formulario
         };
         this.usuarioSelected.idUsuario = idUsuario;       
-        console.log(this.usuarioSelected);    
         this.usuarioService.actualizarUsuario(this.usuarioSelected)
         .subscribe({
           next: (data) => {
             console.log(data);
             this.showMessage("Éxito", data.message, "success");
               this.cargarListaUsuarios();
-              this.cerrarModal();             
+              this.cerrarModal(); 
           },
           error: (error) => {
             console.log(error);
