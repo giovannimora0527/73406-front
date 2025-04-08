@@ -42,7 +42,7 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Gestión de Libros',
         type: 'item',
         url: '/inicio/libros',
-        icon: 'feather icon-user',
+        icon: 'feather icon-book',
         classes: 'nav-item'
       },
       {
