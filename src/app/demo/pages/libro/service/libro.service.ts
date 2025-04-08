@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+providedIn: 'root'
 })
 export class LibroService {
+constructor() {}
 
-  constructor() { }
+  test() {
+    console.log('Servicio de libro funcionando');
+  }
 }

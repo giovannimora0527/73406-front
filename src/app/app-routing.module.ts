@@ -13,16 +13,17 @@ export const routes: Routes = [
     path: '',
     redirectTo: 'inicio',
     pathMatch: 'full'
-  },  
+  },
   {
     path: 'inicio',
     component: AdminComponent,
     data: { title: 'Inicio' },
-    children: [      
-      { path: 'usuarios', component: UsuarioComponent, data: { title: 'Usuarios' }},   
+    children: [
+      { path: 'usuarios', component: UsuarioComponent, data: { title: 'Usuarios' }},
       { path: 'autores', component: AutorComponent, data: { title: 'autores' }},
-      { path: 'prestamos', component: PrestamoComponent, data: { title: 'prestamos' }} ,
-      { path: 'libro', component: LibroComponent, data: { title: 'libro' }}
+      { path: 'libros', component: LibroComponent, data: { title: 'Libros' }},
+      { path: 'prestamos', component: PrestamoComponent, data: { title: 'Prestamos' }}
+
     ]
   },
   { path: '**', redirectTo: 'inicio' }

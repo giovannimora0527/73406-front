@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+providedIn: 'root'
 })
 export class PrestamoService {
+constructor() {}
 
-  constructor() { }
+  test() {
+    console.log('Servicio de préstamo funcionando');
+  }
 }

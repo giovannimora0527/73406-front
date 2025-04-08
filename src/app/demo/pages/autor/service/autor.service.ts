@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+providedIn: 'root'
 })
 export class AutorService {
+constructor() {}
 
-  constructor() { }
+  test() {
+    console.log('Servicio de Autor funcionando');
+  }
 }

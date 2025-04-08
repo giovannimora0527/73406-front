@@ -18,7 +18,7 @@
     "@angular-devkit/core" "19.0.6"
     rxjs "7.8.1"
 
-"@angular-devkit/build-angular@19.0.6":
+"@angular-devkit/build-angular@^19.0.6":
   version "19.0.6"
   resolved "https://registry.npmjs.org/@angular-devkit/build-angular/-/build-angular-19.0.6.tgz"
   integrity sha512-dWTAsE6BSI8z0xglQdYBdqTBwg1Q+RWE3OrmlGs+520Dcoq/F0Z41Y1F3MiuHuQPdDAIQr88iB0APkIRW4clMg==
