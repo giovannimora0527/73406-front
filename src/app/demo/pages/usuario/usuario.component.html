@@ -118,9 +118,9 @@
             </div>
           </div>
 
-          <div class="mb-3">
+          <div class="mb-3" *ngIf="modoFormulario === 'E'">
             <label for="activo" class="form-label">Estado</label>
-            <select class="form-control" id="activo"
+            <select class="form-select" id="activo"
             formControlName="activo">              
               <option [value]="true">Activo</option>
               <option [value]="false">Inactivo</option>

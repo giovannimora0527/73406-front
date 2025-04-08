@@ -106,6 +106,9 @@ export class UsuarioComponent {
 
   guardarActualizarUsuario() {   
     console.log(this.form.valid);
+    if (this.modoFormulario === 'C') {
+      this.form.get('activo').setValue(true);
+    }
     if (this.form.valid) {
       console.log('El formualario es valido');
       if (this.modoFormulario.includes('C')) {
