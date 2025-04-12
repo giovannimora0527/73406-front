@@ -59,7 +59,7 @@ export class UsuarioComponent {
       next: (data) => {
         console.log(data);
         this.usuarios = data;
-        //this.spinner.hide();
+        this.spinner.hide();
       },
       error: (error) => {
         Swal.fire('Error', error.error.message, 'error');

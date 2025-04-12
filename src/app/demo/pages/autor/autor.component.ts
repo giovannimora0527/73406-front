@@ -19,6 +19,7 @@ export class AutorComponent {
     titleModal: string = '';
     msjSpinner: string = "Cargando";
 
+<<<<<<< HEAD
     AutorSelected: Autor;
 
     form: FormGroup = new FormGroup({
@@ -36,6 +37,10 @@ export class AutorComponent {
   ) {
     this.cargarListaAutores();
     this.cargarFormulario();
+=======
+  constructor(private autorService: AutorService) {
+   
+>>>>>>> 85129fd29e1c41ae93d4283f407c46fed9816959
   }
   cargarFormulario() {
     this.form = this.formBuilder.group({
