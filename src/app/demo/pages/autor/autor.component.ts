@@ -10,6 +10,6 @@ import { AutorService } from './service/autor.service';
 export class AutorComponent {
 
   constructor(private autorService: AutorService) {
-    this.autorService.test();
+   
   }
 }
