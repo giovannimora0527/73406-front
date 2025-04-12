@@ -1,41 +1,42 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
-<<<<<<< HEAD:src/app/demo/pages/libros/libro.component.ts
-import { LibroService } from './service/libro.service';
-
-=======
 import { CommonModule } from '@angular/common';
 import { Libro } from 'src/app/models/libro';
 import { LibroService } from './service/libro.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+  FormsModule,
+  ReactiveFormsModule,
+  AbstractControl
+} from '@angular/forms';
 import { Autor } from 'src/app/models/autor';
 import { AutorService } from '../autor/service/autor.service';
 
 declare const bootstrap: any;
->>>>>>> 85129fd29e1c41ae93d4283f407c46fed9816959:src/app/demo/pages/libro/libro.component.ts
 
 @Component({
   selector: 'app-libro',
   standalone: true,
-  imports: [NgxSpinnerModule, ReactiveFormsModule, NgxSpinnerModule, FormsModule, CommonModule],
+  imports: [
+    NgxSpinnerModule,
+    ReactiveFormsModule,
+    FormsModule,
+    CommonModule
+  ],
   templateUrl: './libro.component.html',
-  styleUrl: './libro.component.scss'
+  styleUrls: ['./libro.component.scss'] // Estaba como `styleUrl`, lo corregí a `styleUrls`
 })
 export class LibroComponent {
-<<<<<<< HEAD:src/app/demo/pages/libros/libro.component.ts
-  constructor(private LibroService: LibroService){
-    this.LibroService.test();
-  }
-=======
   msjSpinner: string = '';
   modalInstance: any;
   modoFormulario: string = '';
   titleModal: string = '';
->>>>>>> 85129fd29e1c41ae93d4283f407c46fed9816959:src/app/demo/pages/libro/libro.component.ts
 
   libroSelected: Libro;
-
   libros: Libro[] = [];
   autores: Autor[] = [];
 
@@ -54,21 +55,34 @@ export class LibroComponent {
     private readonly autorService: AutorService
   ) {
     this.getLibros();
-    this.cargarFormulario();
     this.getAutores();
+    this.cargarFormulario();
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this.form.controls;
+  }
+
+  getLibros() {
+    this.libroService.getLibro().subscribe({
+      next: (data) => {
+        this.libros = data;
+      },
+      error: (error) => {
+        console.error(error);
+      }
+    });
   }
 
   getAutores() {
-    this.autorService.getAutores().subscribe(
-      {
-        next: (data) => {         
-          this.autores = data;
-        },
-        error: (error) => {
-          console.log(error);
-        },
+    this.autorService.getAutores().subscribe({
+      next: (data) => {
+        this.autores = data;
+      },
+      error: (error) => {
+        console.error(error);
       }
-    );
+    });
   }
 
   cargarFormulario() {
@@ -77,33 +91,16 @@ export class LibroComponent {
       autorId: ['', [Validators.required]],
       anioPublicacion: ['', [Validators.required]],
       categoriaId: [true, [Validators.required]],
-      existencias: [true, [Validators.required]],
-    });
-  }
-
-  get f(): { [key: string]: AbstractControl } {
-    return this.form.controls;
-  }
-
-  getLibros() {
-    this.libroService.getLibros().subscribe({
-      next: (data) => {        
-        this.libros = data;
-      },
-      error: (error) => {
-        console.log(error);
-      }
+      existencias: [true, [Validators.required]]
     });
   }
 
   crearModal(modoForm: string) {
     this.modoFormulario = modoForm;
-    this.titleModal = modoForm == 'C' ? 'Crear Libro' : 'Editar Libro';
+    this.titleModal = modoForm === 'C' ? 'Crear Libro' : 'Editar Libro';
     const modalElement = document.getElementById('crearModal');
-    modalElement.blur();
-    modalElement.setAttribute('aria-hidden', 'false');
     if (modalElement) {
-      // Verificar si ya existe una instancia del modal
+      modalElement.setAttribute('aria-hidden', 'false');
       if (!this.modalInstance) {
         this.modalInstance = new bootstrap.Modal(modalElement);
       }
@@ -113,7 +110,7 @@ export class LibroComponent {
 
   abrirModoEdicion(libro: Libro) {
     this.crearModal('E');
-    this.libroSelected = libro; 
+    this.libroSelected = libro;
   }
 
   cerrarModal() {
@@ -125,7 +122,7 @@ export class LibroComponent {
       autorId: '',
       anioPublicacion: '',
       categoriaId: '',
-      existencias: '',
+      existencias: ''
     });
     if (this.modalInstance) {
       this.modalInstance.hide();
@@ -134,6 +131,7 @@ export class LibroComponent {
   }
 
   guardarActualizar() {
-    console.log("Entro a guardar o actualizar");
+    console.log('Entro a guardar o actualizar');
+    // Aquí deberías implementar la lógica de guardado o actualización
   }
 }

@@ -1,12 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-<<<<<<< HEAD
-import { Autor} from 'src/app/models/autor';
-import { AutorRs } from 'src/app/models/autorRs';
-
-=======
 import { Autor } from 'src/app/models/autor';
->>>>>>> 85129fd29e1c41ae93d4283f407c46fed9816959
+import { AutorRs } from 'src/app/models/autorRs';
 import { BackendService } from 'src/app/services/backend.service';
 import { environment } from 'src/environments/environment';
 
@@ -14,36 +9,29 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AutorService {
-<<<<<<< HEAD
-  private api = `Autor`;
+  private readonly api = 'autor';
 
-  constructor(private backendService: BackendService) { 
+  constructor(private readonly backendService: BackendService) {
     this.testService();
   }
 
+  // Método de prueba
   testService() {
-    this.backendService.get(environment.apiUrl, this.api, "test");
+    this.backendService.get(environment.apiUrl, this.api, 'test');
   }
 
-  getAutor(): Observable<Autor[]> {
-    return this.backendService.get(environment.apiUrl, this.api, "listar");
-  }
-
-  guardarAutor(Autor: Autor): Observable<AutorRs> {
-    return this.backendService.post(environment.apiUrl, this.api, "guardar-Autor", Autor);
-  }
-
-  actualizarAutor(Autor: Autor): Observable<AutorRs> {
-    return this.backendService.post(environment.apiUrl, this.api, "actualizar-Autor", Autor);
-=======
-  api = "autor";
-
-  constructor(private readonly backendService: BackendService) {
-    
-  }
-
+  // Obtener todos los autores
   getAutores(): Observable<Autor[]> {
-    return this.backendService.get(environment.apiUrl, this.api, "listar");
->>>>>>> 85129fd29e1c41ae93d4283f407c46fed9816959
+    return this.backendService.get(environment.apiUrl, this.api, 'listar');
+  }
+
+  // Guardar un nuevo autor
+  guardarAutor(autor: Autor): Observable<AutorRs> {
+    return this.backendService.post(environment.apiUrl, this.api, 'guardar-Autor', autor);
+  }
+
+  // Actualizar un autor existente
+  actualizarAutor(autor: Autor): Observable<AutorRs> {
+    return this.backendService.post(environment.apiUrl, this.api, 'actualizar-Autor', autor);
   }
 }
