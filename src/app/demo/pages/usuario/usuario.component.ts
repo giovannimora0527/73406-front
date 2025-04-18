@@ -7,10 +7,11 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 // Importa los objetos necesarios de Bootstrap
 declare const bootstrap: any;
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-usuario',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxSpinnerModule],
   templateUrl: './usuario.component.html',
   styleUrl: './usuario.component.scss'
 })
@@ -19,6 +20,7 @@ export class UsuarioComponent {
   modalInstance: any;
   modoFormulario: string = '';
   titleModal: string = '';
+  msjSpinner: string = "Cargando";
 
   usuarioSelected: Usuario;
 
@@ -31,7 +33,8 @@ export class UsuarioComponent {
 
   constructor(
     private usuarioService: UsuarioService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private spinner: NgxSpinnerService
   ) {
     this.cargarListaUsuarios();
     this.cargarFormulario();
@@ -51,13 +54,16 @@ export class UsuarioComponent {
   }
 
   cargarListaUsuarios() {
+    this.spinner.show();
     this.usuarioService.getUsuarios().subscribe({
       next: (data) => {
         console.log(data);
         this.usuarios = data;
+        this.spinner.hide();
       },
       error: (error) => {
         Swal.fire('Error', error.error.message, 'error');
+        this.spinner.hide();
       }
     });
   }
@@ -106,6 +112,9 @@ export class UsuarioComponent {
 
   guardarActualizarUsuario() {   
     console.log(this.form.valid);
+    if (this.modoFormulario === 'C') {
+      this.form.get('activo').setValue(true);
+    }
     if (this.form.valid) {
       console.log('El formualario es valido');
       if (this.modoFormulario.includes('C')) {
