@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 
+import { AutorService } from './service/autor.service';
+
 @Component({
   selector: 'app-autor',
   imports: [],
@@ -7,5 +9,10 @@ import { Component } from '@angular/core';
   styleUrl: './autor.component.scss'
 })
 export class AutorComponent {
+
+
+  constructor(private autorService: AutorService) {
+   
+  }
 
 }

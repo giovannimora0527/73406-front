@@ -8,6 +8,7 @@ import { LibroComponent } from './demo/pages/libro/libro.component';
 
 
 
+
 export const routes: Routes = [
   {
     path: '',
@@ -19,10 +20,11 @@ export const routes: Routes = [
     component: AdminComponent,
     data: { title: 'Inicio' },
     children: [      
+
       { path: 'usuarios', component: UsuarioComponent, data: { title: 'Usuarios' }},   
       { path: 'autores', component: AutorComponent, data: { title: 'autores' }},
       { path: 'prestamos', component: PrestamoComponent, data: { title: 'prestamos' }} ,
-      { path: 'libro', component: LibroComponent, data: { title: 'libro' }}
+      { path: 'libro', component: LibroComponent, data: { title: 'libro' }},
     ]
   },
   { path: '**', redirectTo: 'inicio' }

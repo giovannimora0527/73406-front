@@ -38,6 +38,7 @@ export const NavigationItems: NavigationItem[] = [
         classes: 'nav-item'
       },
       {
+
         id: 'prestamo',
         title: 'Gestión de Prestamos',
         type: 'item',
@@ -51,9 +52,7 @@ export const NavigationItems: NavigationItem[] = [
         type: 'item',
         url: '/inicio/libro',
         icon: 'feather icon-book',
-        classes: 'nav-item'
       }
-
     ]
   },
   /* ---------- Nuevos menus aqui -------------  */
