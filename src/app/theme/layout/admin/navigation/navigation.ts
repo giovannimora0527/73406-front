@@ -38,23 +38,21 @@ export const NavigationItems: NavigationItem[] = [
         classes: 'nav-item'
       },
       {
-        id: 'libro',
-        title: 'Gestión de libros',
+        id: 'libros',
+        title: 'Gestión de Libros',
         type: 'item',
-        url: '/inicio/libro',
+        url: '/inicio/libros',
         icon: 'feather icon-book',
         classes: 'nav-item'
       },
       {
-        id: 'autores',
+        id: 'prestamos',
         title: 'Gestión de Prestamos',
         type: 'item',
-        url: '/inicio/prestamo',
+        url: '/inicio/prestamos',
         icon: 'feather icon-users',
         classes: 'nav-item'
       }
     ]
   },
-
- 
 ];

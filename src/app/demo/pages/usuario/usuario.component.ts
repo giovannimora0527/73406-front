@@ -1,16 +1,16 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UsuarioService } from './service/usuario.service';
 import { Usuario } from 'src/app/models/usuario';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-// Importa los objetos necesarios de Bootstrap
+
 declare const bootstrap: any;
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-usuario',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxSpinnerModule],
   templateUrl: './usuario.component.html',
   styleUrl: './usuario.component.scss'
 })
@@ -19,18 +19,21 @@ export class UsuarioComponent {
   modalInstance: any;
   modoFormulario: string = '';
   titleModal: string = '';
+  msjSpinner: string = "Cargando";
 
   usuarioSelected: Usuario;
 
   form: FormGroup = new FormGroup({
-    nombreCompleto: new FormControl(''),
+    nombre: new FormControl(''),
     correo: new FormControl(''),
-    telefono: new FormControl('')
+    telefono: new FormControl(''),
+    activo: new FormControl('')
   });
 
   constructor(
     private usuarioService: UsuarioService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private spinner: NgxSpinnerService
   ) {
     this.cargarListaUsuarios();
     this.cargarFormulario();
@@ -38,9 +41,10 @@ export class UsuarioComponent {
 
   cargarFormulario() {
     this.form = this.formBuilder.group({
-      nombreCompleto: ['', [Validators.required]],
+      nombre: ['', [Validators.required]],
       correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', [Validators.required]]
+      telefono: ['', [Validators.required]],
+      activo: [true, [Validators.required]],
     });
   }
 
@@ -49,13 +53,16 @@ export class UsuarioComponent {
   }
 
   cargarListaUsuarios() {
+    this.spinner.show();
     this.usuarioService.getUsuarios().subscribe({
       next: (data) => {
         console.log(data);
         this.usuarios = data;
+        this.spinner.hide();
       },
       error: (error) => {
         Swal.fire('Error', error.error.message, 'error');
+        this.spinner.hide();
       }
     });
   }
@@ -67,7 +74,6 @@ export class UsuarioComponent {
     modalElement.blur();
     modalElement.setAttribute('aria-hidden', 'false');
     if (modalElement) {
-      // Verificar si ya existe una instancia del modal
       if (!this.modalInstance) {
         this.modalInstance = new bootstrap.Modal(modalElement);
       }
@@ -80,23 +86,33 @@ export class UsuarioComponent {
     this.form.markAsPristine();
     this.form.markAsUntouched();
     this.form.reset({
-      nombreCompleto: '',
+      nombre: '',
       correo: '',
-      telefono: ''
+      telefono: '',
+      activo: ''
     });
     if (this.modalInstance) {
       this.modalInstance.hide();
     }
+    this.usuarioSelected = null;
   }
 
   abrirModoEdicion(usuario: Usuario) {
     this.crearUsuarioModal('E');
     this.usuarioSelected = usuario;
-    console.log(this.usuarioSelected);
+    this.form.patchValue({
+      nombre: this.usuarioSelected.nombre,
+      correo: this.usuarioSelected.correo,
+      telefono: this.usuarioSelected.telefono,
+      activo: !!this.usuarioSelected.activo  
+    });
   }
 
   guardarActualizarUsuario() {   
     console.log(this.form.valid);
+    if (this.modoFormulario === 'C') {
+      this.form.get('activo').setValue(true);
+    }
     if (this.form.valid) {
       console.log('El formualario es valido');
       if (this.modoFormulario.includes('C')) {
@@ -116,20 +132,20 @@ export class UsuarioComponent {
         });
       } else {
         console.log('Actualizamos un usuario existente');
-        // Actualizar solo los campos específicos
         const idUsuario = this.usuarioSelected.idUsuario;
         this.usuarioSelected = {
-          ...this.usuarioSelected, // Mantener los valores anteriores
-          ...this.form.getRawValue() // Sobrescribir con los valores del formulario
+          ...this.usuarioSelected, 
+          ...this.form.getRawValue() 
         };
         this.usuarioSelected.idUsuario = idUsuario;       
+        console.log(this.usuarioSelected);    
         this.usuarioService.actualizarUsuario(this.usuarioSelected)
         .subscribe({
           next: (data) => {
             console.log(data);
             this.showMessage("Éxito", data.message, "success");
               this.cargarListaUsuarios();
-              this.cerrarModal(); 
+              this.cerrarModal();             
           },
           error: (error) => {
             console.log(error);
