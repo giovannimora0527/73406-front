@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { LibroService } from './service/libro.service';
 
 @Component({
   selector: 'app-libro',
@@ -9,7 +8,4 @@ import { LibroService } from './service/libro.service';
 })
 export class LibroComponent {
 
-  constructor(private LibroService: LibroService) {
-    this.LibroService.test();
-  }
 }
