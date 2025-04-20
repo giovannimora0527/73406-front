@@ -14,6 +14,7 @@ export interface NavigationItem {
 
   children?: NavigationItem[];
 }
+
 export const NavigationItems: NavigationItem[] = [
   {
     id: 'navigation',
@@ -39,21 +40,36 @@ export const NavigationItems: NavigationItem[] = [
       },
       {
         id: 'libros',
+<<<<<<< HEAD
         title: 'Gestión de libros',
         type: 'item',
         url: '/inicio/libros',
         icon: 'feather icon-users',
+=======
+        title: 'Gestión de Libros',
+        type: 'item',
+        url: '/inicio/libros',
+        icon: 'feather icon-book',
+>>>>>>> 89292445c23e12c13fe1155109a7559abc42b087
         classes: 'nav-item'
       },
       {
         id: 'prestamos',
+<<<<<<< HEAD
         title: 'Gestión de prestamos',
+=======
+        title: 'Gestión de Prestamos',
+>>>>>>> 89292445c23e12c13fe1155109a7559abc42b087
         type: 'item',
         url: '/inicio/prestamos',
         icon: 'feather icon-users',
         classes: 'nav-item'
+<<<<<<< HEAD
       },
+=======
+      }
+>>>>>>> 89292445c23e12c13fe1155109a7559abc42b087
     ]
-  },
+  }
   /* ---------- Nuevos menus aqui -------------  */
 ];
