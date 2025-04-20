@@ -1,10 +1,17 @@
-
+<ngx-spinner
+  bdColor="rgba(51,51,51,0.8)"
+  size="medium"
+  color="#fff"
+  type="ball-scale-multiple"
+  [fullScreen]="true">
+  {{msjSpinner}}...
+</ngx-spinner>
 <div class="container">
   <div class="card">
     <div class="card-header">
       <div class="row">
         <div class="col">
-          <button class="btn btn-outline-primary btn-sm" (click)="crearAutorModal('C')" title="Crear un Autor nuevo">
+          <button class="btn btn-outline-primary btn-sm" (click)="crearAutorModal('C')" title="Crear un autor nuevo">
             <i class="fa fa-plus"></i>
             &nbsp;Nuevo
           </button>
@@ -20,38 +27,30 @@
                 <table class="table table-responsive table-stripped">
                   <thead>
                     <tr>
-                      <th>Nombre completo</th>
-                      <th>Correo</th>
-                      <th>Teléfono</th>
-                      <th>Fecha de registro</th>
-                      <th>Estado</th>
+                      <th>Nombre</th>
+                      <th>Nacionalidad</th>
+                      <th>Fecha de nacimiento</th>
                       <th class="text-center">Opciones</th>
                     </tr>
                   </thead>
-                  <tbody *ngIf="Autores.length === 0">
+                  <tbody *ngIf="autores.length === 0">
                     <tr>
-                      <td colspan="6" class="text-center">No hay registros disponibles</td>
+                      <td colspan="4" class="text-center">No hay registros disponibles</td>
                     </tr>
                   </tbody>
-                  <tbody *ngIf="Autores.length > 0">
-                    <tr *ngFor="let Autor of Autores">
+                  <tbody *ngIf="autores.length > 0">
+                    <tr *ngFor="let autor of autores">
                       <td>
-                        {{ Autor.nombre }}
+                        {{ autor.nombre }}
                       </td>
                       <td>
-                        {{ Autor.correo }}
+                        {{ autor.nacionalidad }}
                       </td>
                       <td>
-                        {{ Autor.telefono }}
-                      </td>
-                      <td>
-                        {{ Autor.fechaRegistro }}
-                      </td>
-                      <td>
-                        {{ Autor.activo ? 'Si' : 'No' }}
+                        {{ autor.fechaNacimiento | date: 'dd/MM/yyyy' }}
                       </td>
                       <td class="text-center">
-                        <button class="btn btn-outline-primary btn-sm" title="Editar Autor" (click)="abrirModoEdicion(Autor)">
+                        <button class="btn btn-outline-primary btn-sm" title="Editar autor" (click)="abrirModoEdicion(autor)">
                           <i class="fa fa-edit"></i>
                         </button>
                       </td>
@@ -84,49 +83,38 @@
       <div class="modal-body">
         <form [formGroup]="form">
           <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre Completo</label>
+            <label for="nombre" class="form-label">Nombre</label>
             <input
               type="text"
               formControlName="nombre"
               class="form-control"
               id="nombre"
-              placeholder="Ingrese el nombre completo"
-              [ngModel]="AutorSelected?.nombre"
+              placeholder="Ingrese el nombre del autor"
+              [ngModel]="autorSelected?.nombre"
             />
             <div *ngIf="form.get('nombre')?.hasError('required') && form.get('nombre')?.touched" class="text-danger">
-              El nombre completo es requerido.
+              El nombre es requerido.
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="correo" class="form-label">Correo</label>
-            <input type="email" formControlName="correo" class="form-control" id="correo"
-             placeholder="Ingrese el correo" [ngModel]="AutorSelected?.correo"/>
-            <div *ngIf="form.get('correo')?.hasError('required') && form.get('correo')?.touched" class="text-danger">
-              El correo es requerido.
-            </div>
-            <div *ngIf="form.get('correo')?.hasError('email') && form.get('correo')?.touched" class="text-danger">
-              El formato del correo no es válido.
+            <label for="nacionalidad" class="form-label">Nacionalidad</label>
+            <input type="text" formControlName="nacionalidad" class="form-control" id="nacionalidad"
+             placeholder="Ingrese la nacionalidad" [ngModel]="autorSelected?.nacionalidad"/>
+            <div *ngIf="form.get('nacionalidad')?.hasError('required') && form.get('nacionalidad')?.touched" class="text-danger">
+              La nacionalidad es requerida.
             </div>
           </div>
 
           <div class="mb-3">
-            <label for="telefono" class="form-label">Teléfono</label>
-            <input type="text" formControlName="telefono" class="form-control" id="telefono" placeholder="Ingrese el teléfono" 
-            [ngModel]="AutorSelected?.telefono"/>
-            <div *ngIf="form.get('telefono')?.hasError('required') && form.get('telefono')?.touched" class="text-danger">
-              El teléfono es requerido.
+            <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
+            <input type="date" formControlName="fechaNacimiento" class="form-control" id="fechaNacimiento"
+             [ngModel]="autorSelected?.fechaNacimiento"/>
+            <div *ngIf="form.get('fechaNacimiento')?.hasError('required') && form.get('fechaNacimiento')?.touched" class="text-danger">
+              La fecha de nacimiento es requerida.
             </div>
           </div>
 
-          <div class="mb-3" *ngIf="modoFormulario === 'E'">
-            <label for="activo" class="form-label">Estado</label>
-            <select class="form-select" id="activo"
-            formControlName="activo">              
-              <option [value]="true">Activo</option>
-              <option [value]="false">Inactivo</option>
-            </select>
-          </div>
         </form>
       </div>
       <div class="modal-footer">

@@ -9,29 +9,26 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class AutorService {
-  private readonly api = 'autor';
+  private api = `autor`;
 
-  constructor(private readonly backendService: BackendService) {
+  constructor(private backendService: BackendService) { 
     this.testService();
   }
 
-  // Método de prueba
   testService() {
-    this.backendService.get(environment.apiUrl, this.api, 'test');
+    this.backendService.get(environment.apiUrl, this.api, "test");
   }
 
-  // Obtener todos los autores
   getAutores(): Observable<Autor[]> {
-    return this.backendService.get(environment.apiUrl, this.api, 'listar');
+    return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
 
-  // Guardar un nuevo autor
   guardarAutor(autor: Autor): Observable<AutorRs> {
-    return this.backendService.post(environment.apiUrl, this.api, 'guardar-Autor', autor);
+      console.log(autor);
+    return this.backendService.post(environment.apiUrl, this.api, "guardar-autor", autor);
   }
 
-  // Actualizar un autor existente
   actualizarAutor(autor: Autor): Observable<AutorRs> {
-    return this.backendService.post(environment.apiUrl, this.api, 'actualizar-Autor', autor);
+    return this.backendService.post(environment.apiUrl, this.api, "actualizar-autor", autor);
   }
 }

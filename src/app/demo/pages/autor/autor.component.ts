@@ -1,41 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
-import { AutorService } from './service/autor.service';
 import { CommonModule } from '@angular/common';
+import { AutorService } from './service/autor.service';
 import { Autor } from 'src/app/models/autor';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-  AbstractControl
-} from '@angular/forms';
-import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-
+import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+// Importa los objetos necesarios de Bootstrap
 declare const bootstrap: any;
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-autor',
-  standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxSpinnerModule],
   templateUrl: './autor.component.html',
-  styleUrls: ['./autor.component.scss'] // <-- Corregido 'styleUrl' a 'styleUrls'
+  styleUrl: './autor.component.scss'
 })
 export class AutorComponent {
-  Autores: Autor[] = [];
-  AutorSelected: Autor;
+  autores: Autor[] = [];
   modalInstance: any;
   modoFormulario: string = '';
   titleModal: string = '';
-  msjSpinner: string = 'Cargando';
+  msjSpinner: string = "Cargando";
+
+  autorSelected: Autor;
 
   form: FormGroup = new FormGroup({
     nombre: new FormControl(''),
-    correo: new FormControl(''),
-    telefono: new FormControl(''),
-    activo: new FormControl('')
+    nacionalidad: new FormControl(''),
+    fechaNacimiento: new FormControl('')
   });
 
   constructor(
@@ -50,9 +42,8 @@ export class AutorComponent {
   cargarFormulario() {
     this.form = this.formBuilder.group({
       nombre: ['', [Validators.required]],
-      correo: ['', [Validators.required, Validators.email]],
-      telefono: ['', [Validators.required]],
-      activo: [true, [Validators.required]]
+      nacionalidad: ['', [Validators.required]],
+      fechaNacimiento: ['', [Validators.required]]
     });
   }
 
@@ -64,11 +55,12 @@ export class AutorComponent {
     this.spinner.show();
     this.autorService.getAutores().subscribe({
       next: (data) => {
-        this.Autores = data;
+        console.log(data);
+        this.autores = data;
         this.spinner.hide();
       },
       error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
+        Swal.fire('Error', error.error.message, 'error');
         this.spinner.hide();
       }
     });
@@ -76,10 +68,12 @@ export class AutorComponent {
 
   crearAutorModal(modoForm: string) {
     this.modoFormulario = modoForm;
-    this.titleModal = modoForm === 'C' ? 'Crear Autor' : 'Editar Autor';
+    this.titleModal = modoForm == 'C' ? 'Crear Autor' : 'Editar Autor';
     const modalElement = document.getElementById('crearAutorModal');
+    modalElement.blur();
+    modalElement.setAttribute('aria-hidden', 'false');
     if (modalElement) {
-      modalElement.setAttribute('aria-hidden', 'false');
+      // Verificar si ya existe una instancia del modal
       if (!this.modalInstance) {
         this.modalInstance = new bootstrap.Modal(modalElement);
       }
@@ -93,62 +87,65 @@ export class AutorComponent {
     this.form.markAsUntouched();
     this.form.reset({
       nombre: '',
-      correo: '',
-      telefono: '',
-      activo: ''
+      nacionalidad: '',
+      fechaNacimiento: ''
     });
     if (this.modalInstance) {
       this.modalInstance.hide();
     }
-    this.AutorSelected = null;
+    this.autorSelected = null;
   }
 
   abrirModoEdicion(autor: Autor) {
     this.crearAutorModal('E');
-    this.AutorSelected = autor;
+    this.autorSelected = autor;
     this.form.patchValue({
-      nombre: autor.nombre,
-      correo: autor.correo,
-      telefono: autor.telefono,
-      activo: !!autor.activo
+      nombre: this.autorSelected.nombre,
+      nacionalidad: this.autorSelected.nacionalidad,
+      fechaNacimiento: this.autorSelected.fechaNacimiento
     });
   }
 
   guardarActualizarAutor() {
-    if (this.modoFormulario === 'C') {
-      this.form.get('activo')?.setValue(true);
-    }
-
+    console.log(this.form.valid);
     if (this.form.valid) {
-      if (this.modoFormulario === 'C') {
-        // Crear nuevo autor
-        this.autorService.guardarAutor(this.form.getRawValue()).subscribe({
+      console.log('El formulario es válido');
+      if (this.modoFormulario.includes('C')) {
+        console.log('Creamos un autor nuevo');
+        this.autorService.guardarAutor(this.form.getRawValue())
+        .subscribe({
           next: (data) => {
-            this.showMessage('Éxito', data.message, 'success');
+            console.log(data);
+            this.showMessage("Éxito", data.message, "success");
             this.cargarListaAutores();
-            this.cerrarModal();
+            this.cerrarModal(); 
           },
           error: (error) => {
-            this.showMessage('Error', error.error.message, 'error');
+            console.log(error);
+            this.showMessage("Error", error.error.message, "error");
           }
         });
       } else {
-        // Actualizar autor
-        const idAutor = this.AutorSelected.idAutor;
-        const autorActualizado = {
-          ...this.AutorSelected,
-          ...this.form.getRawValue(),
-          idAutor
+        console.log('Actualizamos un autor existente');
+        // Actualizar solo los campos específicos
+        const idAutor = this.autorSelected.idAutor;
+        this.autorSelected = {
+          ...this.autorSelected, // Mantener los valores anteriores
+          ...this.form.getRawValue() // Sobrescribir con los valores del formulario
         };
-
-        this.autorService.actualizarAutor(autorActualizado).subscribe({
+        this.autorSelected.idAutor = idAutor;
+        console.log(this.autorSelected);    
+        this.autorService.actualizarAutor(this.autorSelected)
+        .subscribe({
           next: (data) => {
-            this.showMessage('Éxito', data.message, 'success');
+            console.log(data);
+            this.showMessage("Éxito", data.message, "success");
             this.cargarListaAutores();
-            this.cerrarModal();
+            this.cerrarModal();             
           },
           error: (error) => {
-            this.showMessage('Error', error.error.message, 'error');
+            console.log(error);
+            this.showMessage("Error", error.error.message, "error");
           }
         });
       }
@@ -157,10 +154,10 @@ export class AutorComponent {
 
   public showMessage(title: string, text: string, icon: SweetAlertIcon) {
     Swal.fire({
-      title,
-      text,
-      icon,
-      confirmButtonText: 'Aceptar',
+      title: title,
+      text: text,
+      icon: icon,
+      confirmButtonText: 'Aceptar',      
       customClass: {
         container: 'position-fixed',
         popup: 'swal-overlay'

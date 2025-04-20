@@ -4,15 +4,7 @@ import { CommonModule } from '@angular/common';
 import { Libro } from 'src/app/models/libro';
 import { LibroService } from './service/libro.service';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-  FormsModule,
-  ReactiveFormsModule,
-  AbstractControl
-} from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { Autor } from 'src/app/models/autor';
 import { AutorService } from '../autor/service/autor.service';
 
@@ -21,14 +13,9 @@ declare const bootstrap: any;
 @Component({
   selector: 'app-libro',
   standalone: true,
-  imports: [
-    NgxSpinnerModule,
-    ReactiveFormsModule,
-    FormsModule,
-    CommonModule
-  ],
+  imports: [NgxSpinnerModule, ReactiveFormsModule, NgxSpinnerModule, FormsModule, CommonModule],
   templateUrl: './libro.component.html',
-  styleUrls: ['./libro.component.scss'] // Estaba como `styleUrl`, lo corregí a `styleUrls`
+  styleUrl: './libro.component.scss'
 })
 export class LibroComponent {
   msjSpinner: string = '';
@@ -37,6 +24,7 @@ export class LibroComponent {
   titleModal: string = '';
 
   libroSelected: Libro;
+
   libros: Libro[] = [];
   autores: Autor[] = [];
 
@@ -55,34 +43,21 @@ export class LibroComponent {
     private readonly autorService: AutorService
   ) {
     this.getLibros();
-    this.getAutores();
     this.cargarFormulario();
-  }
-
-  get f(): { [key: string]: AbstractControl } {
-    return this.form.controls;
-  }
-
-  getLibros() {
-    this.libroService.getLibro().subscribe({
-      next: (data) => {
-        this.libros = data;
-      },
-      error: (error) => {
-        console.error(error);
-      }
-    });
+    this.getAutores();
   }
 
   getAutores() {
-    this.autorService.getAutores().subscribe({
-      next: (data) => {
-        this.autores = data;
-      },
-      error: (error) => {
-        console.error(error);
+    this.autorService.getAutores().subscribe(
+      {
+        next: (data) => {         
+          this.autores = data;
+        },
+        error: (error) => {
+          console.log(error);
+        },
       }
-    });
+    );
   }
 
   cargarFormulario() {
@@ -91,16 +66,33 @@ export class LibroComponent {
       autorId: ['', [Validators.required]],
       anioPublicacion: ['', [Validators.required]],
       categoriaId: [true, [Validators.required]],
-      existencias: [true, [Validators.required]]
+      existencias: [true, [Validators.required]],
+    });
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this.form.controls;
+  }
+
+  getLibros() {
+    this.libroService.getLibro().subscribe({
+      next: (data) => {        
+        this.libros = data;
+      },
+      error: (error) => {
+        console.log(error);
+      }
     });
   }
 
   crearModal(modoForm: string) {
     this.modoFormulario = modoForm;
-    this.titleModal = modoForm === 'C' ? 'Crear Libro' : 'Editar Libro';
+    this.titleModal = modoForm == 'C' ? 'Crear Libro' : 'Editar Libro';
     const modalElement = document.getElementById('crearModal');
+    modalElement.blur();
+    modalElement.setAttribute('aria-hidden', 'false');
     if (modalElement) {
-      modalElement.setAttribute('aria-hidden', 'false');
+      // Verificar si ya existe una instancia del modal
       if (!this.modalInstance) {
         this.modalInstance = new bootstrap.Modal(modalElement);
       }
@@ -110,7 +102,7 @@ export class LibroComponent {
 
   abrirModoEdicion(libro: Libro) {
     this.crearModal('E');
-    this.libroSelected = libro;
+    this.libroSelected = libro; 
   }
 
   cerrarModal() {
@@ -122,7 +114,7 @@ export class LibroComponent {
       autorId: '',
       anioPublicacion: '',
       categoriaId: '',
-      existencias: ''
+      existencias: '',
     });
     if (this.modalInstance) {
       this.modalInstance.hide();
@@ -131,7 +123,6 @@ export class LibroComponent {
   }
 
   guardarActualizar() {
-    console.log('Entro a guardar o actualizar');
-    // Aquí deberías implementar la lógica de guardado o actualización
+    console.log("Entro a guardar o actualizar");
   }
 }
