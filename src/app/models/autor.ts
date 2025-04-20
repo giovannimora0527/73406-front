@@ -1,8 +1,14 @@
 import { Nacionalidad } from "./nacionalidad";
 
-export class Autor {
-    idAutor: number;
+export interface Autor {
+    idAutor?: number;
     nombre: string;
     nacionalidad?: Nacionalidad;
-    fechaNacimiento?: Date;
+    fechaNacimiento?: string
+    nacionalidadId: number;
 }
+export interface AutorNuevo {
+    nombre: string;
+    fechaNacimiento: string;
+    nacionalidadId: number;
+  }

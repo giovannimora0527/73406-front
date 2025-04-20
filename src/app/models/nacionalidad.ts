@@ -1,4 +1,4 @@
 export class Nacionalidad {
-    nacionalidadId: number;
+    nacionalidad_id: number;
     nombre: string;
 }
