@@ -1,8 +1,11 @@
-export interface Libro {
-    id_libro?: number;
+import { Autor } from "./autor";
+import { Categoria } from "./categoria";
+
+export class Libro {
+    idLibro: number;
     titulo: string;
-    id_autor: number;
-    anio_publicacion: Date;
-    categoria: string;
+    autor: Autor;
+    anioPublicacion?: number;
     existencias: number;
+    categoria: Categoria;
 }

@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Libro } from 'src/app/models/libro';
 import { BackendService } from 'src/app/services/backend.service';
 import { environment } from 'src/environments/environment';
 
@@ -6,22 +8,14 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class LibroService {
-  urlApi = environment.apiUrl;
 
-  constructor(private backendService: BackendService) {
-    this.test();
+  private readonly api = `libro`;
+  
+  constructor(private readonly backendService: BackendService) { 
+   
   }
 
-  test() {
-    this.backendService.get(this.urlApi, "app", "test").subscribe(
-      {
-        next: (data) => {
-          console.log(data);
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      }
-    );
+  getLibros(): Observable<Libro[]> {
+    return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
 }
