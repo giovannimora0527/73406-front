@@ -8,30 +8,23 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class LibroService {
+  private readonly api = `libro`; // Ruta de la API
 
-  constructor(private backendService: BackendService) { 
-    this.testService();
-  }
-  
-  crearLibro(libro: Libro): Observable<any> {
-    return this.backendService.post(environment.apiUrl, this.api, "crear-libro", libro);
-  }
-  private api = 'libro';
+  constructor(private readonly backendService: BackendService) { }
 
-
-  testService() {
-    this.backendService.get(environment.apiUrl, this.api, "test");
-  }
-
+  // Método para obtener los libros
   getLibros(): Observable<Libro[]> {
-    return this.backendService.get<Libro[]>(environment.apiUrl, this.api, "listar");
+    return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
 
+  // Método para guardar un nuevo libro
   guardarLibro(libro: Libro): Observable<any> {
     return this.backendService.post(environment.apiUrl, this.api, "guardar-libro", libro);
   }
-
+  
+  // Método para actualizar un libro existente
   actualizarLibro(libro: Libro): Observable<any> {
     return this.backendService.post(environment.apiUrl, this.api, "actualizar-libro", libro);
   }
+  
 }

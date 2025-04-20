@@ -1,4 +1,4 @@
 export class Categoria {
-    categoria_id : number;
+    categoriaId: number;
     nombre: string;
 }

@@ -1,8 +1,6 @@
-import { Nacionalidad } from "./nacionalidad";
-
 export class Autor {
-    idAutor: number;
-    nombre: string;
-    nacionalidad?: Nacionalidad;
-    fechaNacimiento?: Date;
-}
+    idAutor?: number;       
+    nombre: string;          
+    nacionalidad: string;      
+    fechaNacimiento: Date;    
+  }

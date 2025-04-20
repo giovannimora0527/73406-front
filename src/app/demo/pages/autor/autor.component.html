@@ -1,1 +1,86 @@
-<p>autor works!</p>
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-outline-primary btn-sm" (click)="crearAutorModal('C')" title="Crear un Autor nuevo">
+            <i class="fa fa-plus"></i>
+            &nbsp;Nuevo
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+              <div class="table table-responsive">
+                <table class="table table-responsive table-striped">
+                  <thead>
+                    <tr>
+                      <th>Nombre completo</th>
+                      <th>Nacionalidad</th>
+                      <th>Fecha de Nacimiento</th>
+                      <th class="text-center">Opciones</th>
+                    </tr>
+                  </thead>
+                  <tbody *ngIf="Autores.length === 0">
+                    <tr>
+                      <td colspan="4" class="text-center">No hay registros disponibles</td>
+                    </tr>
+                  </tbody>
+                  <tbody *ngIf="Autores.length > 0">
+                    <tr *ngFor="let Autor of Autores">
+                      <td>{{ Autor.nombre }}</td>
+                      <td>{{ Autor.nacionalidad }}</td>
+                      <td>{{ Autor.fechaNacimiento | date: 'dd/MM/yyyy' }}</td>
+                      <td class="text-center">
+                        <button class="btn btn-outline-primary btn-sm" title="Editar Autor" (click)="abrirModoEdicion(Autor)">
+                          <i class="fa fa-edit"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="crearAutorModal" tabindex="-1" aria-labelledby="crearAutorModalLabel" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="crearAutorModalLabel">{{ titleModal }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form">
+          <div class="form-group">
+            <label for="nombre">Nombre</label>
+            <input type="text" class="form-control" id="nombreInput" formControlName="nombre">
+          </div>
+
+          <div class="form-group">
+            <label for="nacionalidad">Nacionalidad</label>
+            <input type="text" class="form-control" id="nacionalidad" formControlName="nacionalidad">
+          </div>
+
+          <div class="form-group">
+            <label for="fechaNacimiento">Fecha de Nacimiento</label>
+            <input type="date" class="form-control" id="fechaNacimiento" formControlName="fechaNacimiento">
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarActualizarAutor()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>

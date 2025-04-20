@@ -3,42 +3,39 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Libro } from 'src/app/models/libro';
 import { LibroService } from './service/libro.service';
-import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
-import {FormBuilder,FormControl,FormGroup,Validators,FormsModule,ReactiveFormsModule,AbstractControl} from '@angular/forms';
+
+import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { Autor } from 'src/app/models/autor';
 import { AutorService } from '../autor/service/autor.service';
+import { Categoria } from 'src/app/models/categoria';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
-
+import { FormGroupDirective } from '@angular/forms'; 
 declare const bootstrap: any;
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-libro',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgxSpinnerModule
-  ],
+  imports: [NgxSpinnerModule, ReactiveFormsModule, NgxSpinnerModule, FormsModule, CommonModule],
   templateUrl: './libro.component.html',
   styleUrl: './libro.component.scss'
 })
 export class LibroComponent {
-  msjSpinner: string = 'Cargando';
+  msjSpinner: string = '';
   modalInstance: any;
   modoFormulario: string = '';
   titleModal: string = '';
 
   libroSelected: Libro;
+
   libros: Libro[] = [];
   autores: Autor[] = [];
-  categorias: any;
 
   form: FormGroup = new FormGroup({
     titulo: new FormControl(''),
     autorId: new FormControl(''),
     anioPublicacion: new FormControl(''),
-    categoriaId: new FormControl(''),
+    CategoriaId: new FormControl(''),
     existencias: new FormControl('')
   });
 
@@ -53,8 +50,17 @@ export class LibroComponent {
     this.getAutores();
   }
 
-  get f(): { [key: string]: AbstractControl } {
-    return this.form.controls;
+  getAutores() {
+    this.autorService.getAutor().subscribe(
+      {
+        next: (data) => {         
+          this.autores = data;
+        },
+        error: (error) => {
+          console.log(error);
+        },
+      }
+    );
   }
 
   cargarFormulario() {
@@ -62,44 +68,34 @@ export class LibroComponent {
       titulo: ['', [Validators.required]],
       autorId: ['', [Validators.required]],
       anioPublicacion: ['', [Validators.required]],
-      categoriaId: ['', [Validators.required]],
-      existencias: ['', [Validators.required]],
+      CategoriaId: [true, [Validators.required]],
+      existencias: [true, [Validators.required]],
     });
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this.form.controls;
   }
 
   getLibros() {
-    this.spinner.show();
     this.libroService.getLibros().subscribe({
-      next: (data) => {
+      next: (data) => {        
         this.libros = data;
-        this.spinner.hide();
       },
       error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
-        this.spinner.hide();
-      }
-    });
-  }
-
-  getAutores() {
-    this.autorService.getAutores().subscribe({
-      next: (data) => {
-        this.autores = data;
-      },
-      error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
+        console.log(error);
       }
     });
   }
 
   crearModal(modoForm: string) {
     this.modoFormulario = modoForm;
-    this.titleModal = modoForm === 'C' ? 'Crear Libro' : 'Editar Libro';
+    this.titleModal = modoForm == 'C' ? 'Crear Libro' : 'Editar Libro';
     const modalElement = document.getElementById('crearModal');
-    modalElement?.blur();
-    modalElement?.setAttribute('aria-hidden', 'false');
-
+    modalElement.blur();
+    modalElement.setAttribute('aria-hidden', 'false');
     if (modalElement) {
+      // Verificar si ya existe una instancia del modal
       if (!this.modalInstance) {
         this.modalInstance = new bootstrap.Modal(modalElement);
       }
@@ -111,11 +107,11 @@ export class LibroComponent {
     this.crearModal('E');
     this.libroSelected = libro;
     this.form.patchValue({
-      titulo: libro.titulo,
-      autorId: libro.autor,
-      anioPublicacion: libro.anioPublicacion,
-      categoriaId: libro.categoria,
-      existencias: libro.existencias
+      titulo: this.libroSelected.titulo,
+      autorId: this.libroSelected.autor,
+      aniopublicacion: this.libroSelected.anioPublicacion,
+      Categoriaid: this.libroSelected.categoria,
+      existencias: this.libroSelected.existencias
     });
   }
 
@@ -128,60 +124,56 @@ export class LibroComponent {
       autorId: '',
       anioPublicacion: '',
       categoriaId: '',
-      existencias: ''
+      existencias: '',
     });
     if (this.modalInstance) {
       this.modalInstance.hide();
     }
     this.libroSelected = null;
   }
-
   guardarActualizar() {
     if (this.form.valid) {
-      this.spinner.show();
       if (this.modoFormulario === 'C') {
-        // Crear libro
-        this.libroService.crearLibro(this.form.getRawValue()).subscribe({
+        console.log('Creamos un libro nuevo');
+        this.libroService.guardarLibro(this.form.getRawValue()).subscribe({
           next: (data) => {
-            this.showMessage('Éxito', 'Libro creado correctamente', 'success');
-            this.cerrarModal();
+            this.showMessage('Éxito', data.message, 'success');
             this.getLibros();
-            this.spinner.hide();
+            this.cerrarModal();
           },
-          error: (err) => {
-            this.showMessage('Error', err.error.message, 'error');
-            this.spinner.hide();
+          error: (error) => {
+            console.log(error);
+            this.showMessage('Error', error.error.message, 'error');
           }
         });
       } else {
-        // Editar libro
-        const libroActualizado: Libro = {
+        console.log('Actualizamos un libro existente');
+        this.libroSelected = {
           ...this.libroSelected,
           ...this.form.getRawValue()
         };
-        this.libroService.actualizarLibro(libroActualizado).subscribe({
+        this.libroService.actualizarLibro(this.libroSelected).subscribe({
           next: (data) => {
-            this.showMessage('Éxito', 'Libro actualizado correctamente', 'success');
-            this.cerrarModal();
+            this.showMessage('Éxito', data.message, 'success');
             this.getLibros();
-            this.spinner.hide();
+            this.cerrarModal();
           },
-          error: (err) => {
-            this.showMessage('Error', err.error.message, 'error');
-            this.spinner.hide();
+          error: (error) => {
+            console.log(error);
+            this.showMessage('Error', error.error.message, 'error');
           }
         });
       }
     } else {
-      this.showMessage('Formulario inválido', 'Por favor completa todos los campos obligatorios.', 'warning');
+      this.showMessage('Error', 'Por favor, complete todos los campos correctamente.', 'error');
     }
   }
 
-  showMessage(title: string, text: string, icon: SweetAlertIcon) {
+  public showMessage(title: string, text: string, icon: SweetAlertIcon) {
     Swal.fire({
-      title,
-      text,
-      icon,
+      title: title,
+      text: text,
+      icon: icon,
       confirmButtonText: 'Aceptar',
       customClass: {
         container: 'position-fixed',
