@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-import { Component } from '@angular/core';
-import { LibroService } from './service/libro.service';
-
-
-@Component({
-  selector: 'app-libro',
-  imports: [],
-=======
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -22,19 +13,11 @@ declare const bootstrap: any;
 @Component({
   selector: 'app-libro',
   standalone: true,
-  imports: [NgxSpinnerModule, ReactiveFormsModule, NgxSpinnerModule, FormsModule, CommonModule],
->>>>>>> 89292445c23e12c13fe1155109a7559abc42b087
+  imports: [NgxSpinnerModule, ReactiveFormsModule, FormsModule, CommonModule],
   templateUrl: './libro.component.html',
   styleUrl: './libro.component.scss'
 })
 export class LibroComponent {
-<<<<<<< HEAD
-  constructor(private LibroService: LibroService){
-    this.LibroService.test();
-  }
-
-}
-=======
   msjSpinner: string = '';
   modalInstance: any;
   modoFormulario: string = '';
@@ -65,16 +48,14 @@ export class LibroComponent {
   }
 
   getAutores() {
-    this.autorService.getAutores().subscribe(
-      {
-        next: (data) => {         
-          this.autores = data;
-        },
-        error: (error) => {
-          console.log(error);
-        },
-      }
-    );
+    this.autorService.getAutores().subscribe({
+      next: (data) => {
+        this.autores = data;
+      },
+      error: (error) => {
+        console.log(error);
+      },
+    });
   }
 
   cargarFormulario() {
@@ -82,8 +63,8 @@ export class LibroComponent {
       titulo: ['', [Validators.required]],
       autorId: ['', [Validators.required]],
       anioPublicacion: ['', [Validators.required]],
-      categoriaId: [true, [Validators.required]],
-      existencias: [true, [Validators.required]],
+      categoriaId: ['', [Validators.required]],
+      existencias: ['', [Validators.required]],
     });
   }
 
@@ -93,7 +74,7 @@ export class LibroComponent {
 
   getLibros() {
     this.libroService.getLibro().subscribe({
-      next: (data) => {        
+      next: (data) => {
         this.libros = data;
       },
       error: (error) => {
@@ -104,12 +85,11 @@ export class LibroComponent {
 
   crearModal(modoForm: string) {
     this.modoFormulario = modoForm;
-    this.titleModal = modoForm == 'C' ? 'Crear Libro' : 'Editar Libro';
+    this.titleModal = modoForm === 'C' ? 'Crear Libro' : 'Editar Libro';
     const modalElement = document.getElementById('crearModal');
-    modalElement.blur();
-    modalElement.setAttribute('aria-hidden', 'false');
     if (modalElement) {
-      // Verificar si ya existe una instancia del modal
+      modalElement.blur();
+      modalElement.setAttribute('aria-hidden', 'false');
       if (!this.modalInstance) {
         this.modalInstance = new bootstrap.Modal(modalElement);
       }
@@ -119,14 +99,15 @@ export class LibroComponent {
 
   abrirModoEdicion(libro: Libro) {
     this.crearModal('E');
-    this.libroSelected = libro; 
+    this.libroSelected = libro;
+    this.form.patchValue(libro); // precargar datos del libro en el formulario
   }
 
   cerrarModal() {
     this.form.reset();
     this.form.markAsPristine();
     this.form.markAsUntouched();
-    this.form.reset({
+    this.form.setValue({
       titulo: '',
       autorId: '',
       anioPublicacion: '',
@@ -141,6 +122,37 @@ export class LibroComponent {
 
   guardarActualizar() {
     console.log("Entro a guardar o actualizar");
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const libro: Libro = this.form.value;
+
+    if (this.modoFormulario === 'C') {
+      this.libroService.guardarLibros(libro).subscribe({
+        next: (res) => {
+          console.log("Libro creado:", res);
+          this.getLibros();
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+    } else {
+      libro.id = this.libroSelected?.id;
+      this.libroService.actualizarLibro(libro).subscribe({
+        next: (res) => {
+          console.log("Libro actualizado:", res);
+          this.getLibros();
+          this.cerrarModal();
+        },
+        error: (error) => {
+          console.error(error);
+        }
+      });
+    }
   }
 }
->>>>>>> 89292445c23e12c13fe1155109a7559abc42b087
