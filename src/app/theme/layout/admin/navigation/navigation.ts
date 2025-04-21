@@ -38,6 +38,7 @@ export const NavigationItems: NavigationItem[] = [
         classes: 'nav-item'
       },
       {
+<<<<<<< HEAD
         id: 'libro',
         title: 'Gestión de Libros',
         type: 'item',
@@ -51,6 +52,13 @@ export const NavigationItems: NavigationItem[] = [
         type: 'item',
         url: '/inicio/prestamo',
         icon: 'feather icon-refresh-cw',
+=======
+        id: 'autores',
+        title: 'Gestión de Autores',
+        type: 'item',
+        url: '/inicio/autores',
+        icon: 'feather icon-users',
+>>>>>>> d09bdfa (Ajustes de modulos)
         classes: 'nav-item'
       }
     ]

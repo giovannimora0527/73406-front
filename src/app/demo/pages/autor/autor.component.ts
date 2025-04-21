@@ -1,4 +1,8 @@
 import { Component } from '@angular/core';
+<<<<<<< HEAD
+=======
+import { AutorService } from './service/autor.service';
+>>>>>>> d09bdfa (Ajustes de modulos)
 
 @Component({
   selector: 'app-autor',
@@ -8,4 +12,10 @@ import { Component } from '@angular/core';
 })
 export class AutorComponent {
 
+<<<<<<< HEAD
+=======
+  constructor(private autorService: AutorService) {
+    this.autorService.test();
+  }
+>>>>>>> d09bdfa (Ajustes de modulos)
 }
