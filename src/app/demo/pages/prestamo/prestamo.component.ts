@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PrestamoService } from './service/prestamo.service';
 
 @Component({
   selector: 'app-prestamo',
@@ -8,4 +9,7 @@ import { Component } from '@angular/core';
 })
 export class PrestamoComponent {
 
+  constructor(private PrestamoService: PrestamoService) {
+    this.PrestamoService.test();
+  }
 }
