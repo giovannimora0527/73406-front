@@ -26,39 +26,31 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Gestión de Usuarios',
         type: 'item',
         url: '/inicio/usuarios',
-        icon: 'feather icon-users',
-        classes: 'nav-item'
-      },
-      {
-        id: 'autor',
-        title: 'Gestión de Autores',
-        type: 'item',
-        url: '/inicio/autores',
         icon: 'feather icon-user',
         classes: 'nav-item'
       },
       {
-<<<<<<< HEAD
-        id: 'libro',
-        title: 'Gestión de Libros',
-        type: 'item',
-        url: '/inicio/libro',
-        icon: 'feather icon-book',
-        classes: 'nav-item'
-      },
-      {
-        id: 'prestamo',
-        title: 'Gestión de Prestamos',
-        type: 'item',
-        url: '/inicio/prestamo',
-        icon: 'feather icon-refresh-cw',
-=======
         id: 'autores',
         title: 'Gestión de Autores',
         type: 'item',
         url: '/inicio/autores',
         icon: 'feather icon-users',
->>>>>>> d09bdfa (Ajustes de modulos)
+        classes: 'nav-item'
+      },
+      {
+        id: 'libros',
+        title: 'Gestión de Libros',
+        type: 'item',
+        url: '/inicio/libros',
+        icon: 'feather icon-book',
+        classes: 'nav-item'
+      },
+      {
+        id: 'prestamos',
+        title: 'Gestión de Prestamos',
+        type: 'item',
+        url: '/inicio/prestamos',
+        icon: 'feather icon-users',
         classes: 'nav-item'
       }
     ]
