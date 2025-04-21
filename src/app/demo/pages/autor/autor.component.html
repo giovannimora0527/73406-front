@@ -1,153 +1,142 @@
-<ngx-spinner
-  bdColor="rgba(51,51,51,0.8)"
-  size="medium"
-  color="#fff"
-  type="ball-scale-multiple"
-  [fullScreen]="true">
-  {{msjSpinner}}...
-</ngx-spinner>
+    <ngx-spinner
+    bdColor="rgba(51,51,51,0.8)"
+    size="medium"
+    color="#fff"
+    type="ball-scale-multiple"
+    [fullScreen]="true">
+    {{msjSpinner}}...
+    </ngx-spinner>
 
-<div class="container">
-    <div class="card">
-        <div class="card-header">
-            <div class="row">
-              <div class="col">
-                <button class="btn btn-outline-primary btn-sm" (click)="crearAutorModal('C')" title="Crear un autor nuevo">
-                  <i class="fa fa-plus"></i>
-                  &nbsp;Nuevo
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="table table-responsive">
-                      <table class="table table-responsive table-stripped">
-                        <thead>
-                          <tr>
-                            <th>Nombre</th>
-                            <th>Fecha de Nacimiento</th>
-                            <th>Nacionalidad</th>
-                            <th class="text-center">Opciones</th>
-                          </tr>
-                        </thead>
-                        <tbody *ngIf="autores.length === 0">
-                          <tr>
-                            <td colspan="4" class="text-center">No hay registros disponibles</td>
-                          </tr>
-                        </tbody>
-                        <tbody *ngIf="autores.length > 0">
-                          <tr *ngFor="let autor of autores">
-                            <td>
-                              {{ autor.nombre }}
-                            </td>
-                            <td>
-                              {{ autor.fechaNacimiento | date:'yyyy-MM-dd' }}
-                            </td>
-                            <td>
-                              {{ autor.nacionalidad?.nombre }}
-                            </td>
-                            <td class="text-center">
-                              <button class="btn btn-outline-primary btn-sm" title="Editar autor" (click)="abrirModoEdicion(autor)">
-                                <i class="fa fa-edit"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                <div class="col">
+                    <button class="btn btn-outline-primary btn-sm" (click)="crearAutorModal('C')" title="Crear un autor nuevo">
+                    <i class="fa fa-plus"></i>
+                    &nbsp;Nuevo
+                    </button>
                 </div>
-              </div>
+                </div>
             </div>
-          </div>
+            <div class="card-body">
+                <div class="row">
+                <div class="col">
+                    <div class="card">
+                    <div class="card-body">
+                        <div class="table table-responsive">
+                        <table class="table table-responsive table-stripped">
+                            <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Fecha de Nacimiento</th>
+                                <th>Nacionalidad</th>
+                                <th class="text-center">Opciones</th>
+                            </tr>
+                            </thead>
+                            <tbody *ngIf="autores.length === 0">
+                            <tr>
+                                <td colspan="4" class="text-center">No hay registros disponibles</td>
+                            </tr>
+                            </tbody>
+                            <tbody *ngIf="autores.length > 0">
+                            <tr *ngFor="let autor of autores">
+                                <td>
+                                {{ autor.nombre }}
+                                </td>
+                                <td>
+                                {{ autor.fechaNacimiento | date:'yyyy-MM-dd' }}
+                                </td>
+                                <td>
+                                {{ autor.nacionalidad?.nombre }}
+                                </td>
+                                <td class="text-center">
+                                <button class="btn btn-outline-primary btn-sm" title="Editar autor" (click)="abrirModoEdicion(autor)">
+                                    <i class="fa fa-edit"></i>
+                                </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
 
-<div
-  class="modal fade"
-  id="crearAutorModal"
-  tabindex="-1"
-  aria-labelledby="crearAutorModalLabel"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
->
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="crearAutorModalLabel">{{ titleModal }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form [formGroup]="form">
-          <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input
-              type="text"
-              formControlName="nombre"
-              class="form-control"
-              id="nombre"
-              placeholder="Ingrese el nombre del autor"
-              [ngModel]="autorSelected?.nombre"
-            />
-            <div *ngIf="form.get('nombre')?.hasError('required') && form.get('nombre')?.touched" class="text-danger">
-              El nombre del autor es requerido.
-            </div>
-          </div>
+    <div
+    class="modal fade"
+    id="crearAutorModal"
+    tabindex="-1"
+    aria-labelledby="crearAutorModalLabel"
+    data-bs-backdrop="static"
+    data-bs-keyboard="false"
+    >
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="crearAutorModalLabel">{{ titleModal }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form [formGroup]="form">
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input
+                type="text"
+                formControlName="nombre"
+                class="form-control"
+                id="nombre"
+                placeholder="Ingrese el nombre del autor"
 
-          <div class="mb-3">
-            <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
-            <input
-              type="date"
-              formControlName="fechaNacimiento"
-              class="form-control"
-              id="fechaNacimiento"
-              [ngModel]="autorSelected?.fechaNacimiento"
-            />
-            <div *ngIf="form.get('fechaNacimiento')?.hasError('required') && form.get('fechaNacimiento')?.touched" class="text-danger">
-              La fecha de nacimiento es requerida.
+                />
+                <div *ngIf="form.get('nombre')?.hasError('required') && form.get('nombre')?.touched" class="text-danger">
+                El nombre del autor es requerido.
+                </div>
             </div>
-          </div>
 
-          <div class="mb-3">
-            <label class="form-label">Nacionalidad</label>
-            
-            <!-- Select visible solo en creación -->
-            <select class="form-select" 
-                    formControlName="nacionalidadId"
-                    *ngIf="modoFormulario === 'C'">
-              <option [ngValue]="null">Seleccione una nacionalidad</option>
-              <option *ngFor="let nacionalidad of nacionalidades" 
-                      [ngValue]="nacionalidad.nacionalidad_id">
-                {{ nacionalidad.nombre }}
-              </option>
-            </select>
-          
-            <!-- Campo de solo lectura en edición + input oculto para mantener el valor -->
-            <div *ngIf="modoFormulario === 'E'">
-              <input type="text" 
-                     class="form-control" 
-                     [value]="autorSelected?.nacionalidad?.nombre" 
-                     readonly>
-              <input type="hidden" formControlName="nacionalidadId">
+            <div class="mb-3">
+                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+                <input
+                type="date"
+                formControlName="fechaNacimiento"
+                class="form-control"
+                id="fechaNacimiento"
+
+                />
+                <div *ngIf="form.get('fechaNacimiento')?.hasError('required') && form.get('fechaNacimiento')?.touched" class="text-danger">
+                La fecha de nacimiento es requerida.
+                </div>
             </div>
-          
-            <!-- Mensaje de error -->
-            <div *ngIf="form.get('nacionalidadId')?.hasError('required') && form.get('nacionalidadId')?.touched" 
-                 class="text-danger">
-              La nacionalidad es requerida.
-            </div>
-          </div>
-                  
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-        <button type="button" class="btn btn-primary" (click)="guardarAutor()">Guardar</button>
-      </div>
+
+            <div class="mb-3">
+                <label class="form-label">Nacionalidad</label>
+                <!-- CREAR: select editable -->
+                <select class="form-select" formControlName="nacionalidadId" *ngIf="modoFormulario === 'C'">
+                <option [ngValue]="null">Seleccione una nacionalidad</option>
+                <option *ngFor="let nacionalidad of nacionalidades" [ngValue]="nacionalidad.nacionalidad_id">
+                    {{ nacionalidad.nombre }}
+                </option>
+                </select>
+                <!-- EDITAR: solo lectura + input hidden para mantener el valor en el form -->
+                <div *ngIf="modoFormulario === 'E'">
+                <input type="text" class="form-control mb-1" [value]="autorSelected?.nacionalidad?.nombre" readonly>
+                <input type="hidden" formControlName="nacionalidadId">
+                </div>
+                <div *ngIf="form.get('nacionalidadId')?.hasError('required') && form.get('nacionalidadId')?.touched" class="text-danger">
+                La nacionalidad es requerida.
+                </div>
+            </div>          
+                    
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+            <button type="button" class="btn btn-primary" (click)="guardarAutor()">Guardar</button>
+        </div>
+        </div>
     </div>
-  </div>
-</div>
+    </div>

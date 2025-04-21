@@ -108,44 +108,48 @@ export class AutorComponent {
     this.form.markAllAsTouched();
   
     if (this.form.valid) {
-      const autorData = {
+      // Construir el objeto autorData usando los valores actuales del formulario
+      const autorData: any = {
         nombre: this.form.get('nombre')?.value,
         fechaNacimiento: this.form.get('fechaNacimiento')?.value,
-        nacionalidadId: this.modoFormulario === 'C' 
-                        ? Number(this.form.get('nacionalidadId')?.value)
-                        : this.autorSelected?.nacionalidad?.nacionalidad_id
+        nacionalidadId: this.form.get('nacionalidadId')?.value
       };
-      console.log("Autor a guardar:", autorData);
   
       if (this.modoFormulario === 'C') {
+        // Crear nuevo autor
         this.autorService.guardarAutor(autorData).subscribe({
           next: (data) => {
-            this.showMessage("Éxito", data.message || "Autor guardado correctamente", "success"); // ✅
+            this.showMessage("Éxito", data.message, "success");
             this.cargarListaAutores();
             this.cerrarModal();
           },
           error: (error) => {
-            this.showMessage("Error", error.error?.message || "Error al guardar", "error"); // ✅
+            this.showMessage("Error", error.error?.message || "Ocurrió un error al guardar el autor", "error");
           }
         });
-      } else if (this.modoFormulario === 'E' && this.autorSelected) {
+      } else {
+        // Actualizar autor existente
         const idAutor = this.autorSelected.idAutor;
-        const autorEditado = { ...autorData, idAutor };
+        const autorEditado = {
+          ...this.autorSelected,
+          ...autorData,
+          idAutor: idAutor // asegúrate de mantener el id
+        };
         this.autorService.actualizarAutor(autorEditado).subscribe({
           next: (data) => {
-            this.showMessage("Éxito", data.message || "Autor actualizado", "success"); // ✅
+            this.showMessage("Éxito", data.message, "success");
             this.cargarListaAutores();
             this.cerrarModal();
           },
           error: (error) => {
-            this.showMessage("Error", error.error?.message || "Error al actualizar", "error"); // ✅
+            this.showMessage("Error", error.error?.message || "Ocurrió un error al actualizar el autor", "error");
           }
         });
       }
     } else {
-      this.showMessage("Atención", "Complete todos los campos", "warning"); // ✅
+      this.showMessage("Atención", "Complete todos los campos", "warning");
     }
-  } 
+  }
   
     public showMessage(title: string, text: string, icon: SweetAlertIcon) { 
       Swal.fire({
