@@ -53,8 +53,6 @@ export class AutorComponent {
       }
     });
   }
-  
-  
 
   cargarListaAutores() {
     this.spinner.show();
@@ -102,31 +100,32 @@ export class AutorComponent {
     this.form.patchValue({
       nombre: autor.nombre,
       fechaNacimiento: autor.fechaNacimiento,
-      nacionalidadId: autor.nacionalidad?.nacionalidad_id ?? null
-    }
-  );
-  
+      nacionalidadId: autor.nacionalidad?.nacionalidad_id
+    });
   }
 
   guardarAutor() {
-    if (this.form.valid && this.form.get('nacionalidadId')?.value !== null) {
-      console.log("ID Nacionalidad seleccionado:", this.form.get('nacionalidadId')?.value);
-      const autorData: any = {
+    this.form.markAllAsTouched();
+  
+    if (this.form.valid) {
+      const autorData = {
         nombre: this.form.get('nombre')?.value,
         fechaNacimiento: this.form.get('fechaNacimiento')?.value,
-        nacionalidadId: this.form.get('nacionalidadId')?.value
+        nacionalidadId: this.modoFormulario === 'C' 
+                        ? Number(this.form.get('nacionalidadId')?.value)
+                        : this.autorSelected?.nacionalidad?.nacionalidad_id
       };
       console.log("Autor a guardar:", autorData);
-
+  
       if (this.modoFormulario === 'C') {
         this.autorService.guardarAutor(autorData).subscribe({
           next: (data) => {
-            this.showMessage("Éxito", data.message || "Autor guardado correctamente", "success");
+            this.showMessage("Éxito", data.message || "Autor guardado correctamente", "success"); // ✅
             this.cargarListaAutores();
             this.cerrarModal();
           },
           error: (error) => {
-            this.showMessage("Error", error.error?.message || "Ocurrió un error al guardar el autor", "error");
+            this.showMessage("Error", error.error?.message || "Error al guardar", "error"); // ✅
           }
         });
       } else if (this.modoFormulario === 'E' && this.autorSelected) {
@@ -134,44 +133,36 @@ export class AutorComponent {
         const autorEditado = { ...autorData, idAutor };
         this.autorService.actualizarAutor(autorEditado).subscribe({
           next: (data) => {
-            this.showMessage("Éxito", data.message || "Autor actualizado correctamente", "success");
+            this.showMessage("Éxito", data.message || "Autor actualizado", "success"); // ✅
             this.cargarListaAutores();
             this.cerrarModal();
           },
           error: (error) => {
-            this.showMessage("Error", error.error?.message || "Ocurrió un error al actualizar el autor", "error");
+            this.showMessage("Error", error.error?.message || "Error al actualizar", "error"); // ✅
           }
         });
       }
     } else {
-      this.form.markAllAsTouched();
-      if (this.form.get('nacionalidadId')?.value === null) {
-        this.showMessage("Atención", "Debe seleccionar una nacionalidad válida.", "warning");
-      }
+      this.showMessage("Atención", "Complete todos los campos", "warning"); // ✅
     }
-  }  
+  } 
   
-
-  public showMessage(title: string, text: string, icon: SweetAlertIcon) {
-    Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
-      confirmButtonText: 'Aceptar',
-      customClass: {
-        container: 'position-fixed',
-        popup: 'swal-overlay'
-      },
-      didOpen: () => {
-        const swalPopup = document.querySelector('.swal2-popup');
-        if (swalPopup) {
-          (swalPopup as HTMLElement).style.zIndex = '1060';
+    public showMessage(title: string, text: string, icon: SweetAlertIcon) { 
+      Swal.fire({
+        title: title,
+        text: text,
+        icon: icon,
+        confirmButtonText: 'Aceptar',
+        customClass: {
+          container: 'position-fixed',
+          popup: 'swal-overlay'
         }
-      }
-    });
-  }
-
-  get f(): { [key: string]: AbstractControl } {
-    return this.form.controls;
-  }
-}
+      });
+    }
+  
+    // ¡Este es el ÚNICO método get f() que debe existir!
+    get f(): { [key: string]: AbstractControl } {
+      return this.form.controls;
+    }
+  } // ← Solo este cierre de clase es necesario
+  
