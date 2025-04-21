@@ -1,1 +1,35 @@
-<p>Hola Mundo!</p>
+<!-- src/app/demo/pages/autor/autor.component.html -->
+<div class="container mt-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Gestión de Autores</h5>
+        <button class="btn btn-outline-primary btn-sm" title="Nuevo autor">
+          <i class="fa fa-plus"></i> Nuevo
+        </button>
+      </div>
+      <div class="card-body">
+        <table class="table table-striped table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Nacionalidad</th>
+              <th>F. Nacimiento</th>
+            </tr>
+          </thead>
+          <tbody *ngIf="autores.length; else noData">
+            <tr *ngFor="let autor of autores">
+              <td>{{ autor.idAutor }}</td>
+              <td>{{ autor.nombre }}</td>
+              <td>{{ autor.nacionalidad }}</td>
+              <td>{{ autor.fechaNacimiento | date:'yyyy-MM-dd' }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <ng-template #noData>
+          <div class="text-center text-muted">No hay registros disponibles</div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+  

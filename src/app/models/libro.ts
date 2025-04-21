@@ -1,11 +1,11 @@
-class Libro {
-    id_libro: number;
-    titulo: string;
-    id_autor: number;
-    anio_publicacion?: number;
-    categoria?: string;
-    existencias: number;
-    año_publicacion?: string;
-}
+import { Autor } from "./autor";
+import { Categoria } from "./categoria";
 
-export default Libro;
+export class Libro {
+    idLibro: number;
+    titulo: string;
+    autor: Autor;
+    anioPublicacion?: number;
+    existencias: number;
+    categoria: Categoria;
+}

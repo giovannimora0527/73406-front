@@ -50,10 +50,10 @@ export const NavigationItems: NavigationItem[] = [
         title: 'Gestión de Prestamos',
         type: 'item',
         url: '/inicio/prestamos',
-        icon: 'feather icon-user',
+        icon: 'feather icon-users',
         classes: 'nav-item'
-      },
+      }
     ]
   },
-
+  /* ---------- Nuevos menus aqui -------------  */
 ];
