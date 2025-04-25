@@ -59,3 +59,20 @@ out-tsc/
 
 # Ignorar logs
 *.log
+
+# Ignorar node_modules
+node_modules/
+
+# Ignorar dist de producción
+dist/
+
+# Ignorar directorios de construcción
+out-tsc/
+.tmp/
+
+# Ignorar IDEs
+.vscode/
+.idea/
+
+# Ignorar logs
+*.log

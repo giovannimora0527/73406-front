@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { NgxSpinnerModule } from 'ngx-spinner';
 import { CommonModule } from '@angular/common';
 import { UsuarioService } from './service/usuario.service';
 import { Usuario } from 'src/app/models/usuario';
@@ -9,11 +10,12 @@ declare var bootstrap: any;
 
 @Component({
   selector: 'app-usuario',
-  imports: [CommonModule],
+  imports: [CommonModule,NgxSpinnerModule,],
   templateUrl: './usuario.component.html',
   styleUrl: './usuario.component.scss'
 })
 export class UsuarioComponent {
+  msjSpinner: string = 'Cargando usuarios...';
   usuarios: Usuario[] = [];
   modalInstance: any;
 
