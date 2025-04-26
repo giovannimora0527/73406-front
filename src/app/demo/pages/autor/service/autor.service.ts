@@ -21,6 +21,6 @@ export class AutorService {
   }
 
   actualizarAutor(autor: Autor): Observable<any> {
-    return this.backendService.put(environment.apiUrl, this.api, 'actualizar', autor);
+    return this.backendService.post(environment.apiUrl, this.api, 'actualizar', autor);
   }
 }
