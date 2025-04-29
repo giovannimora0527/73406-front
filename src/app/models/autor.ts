@@ -7,8 +7,3 @@ export interface Autor {
     fechaNacimiento?: string
     nacionalidadId: number;
 }
-export interface AutorNuevo {
-    nombre: string;
-    fechaNacimiento: string;
-    nacionalidadId: number;
-  }
