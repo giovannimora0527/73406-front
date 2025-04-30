@@ -38,22 +38,37 @@
                       <th>Fecha de Devolución</th>
                       <th>Estado</th>
                       <th>Fecha de Entrega</th>
-                      <th class="text-center">Opciones</th> 
+                      <th class="text-center">Opciones</th>
                     </tr>
                   </thead>
                   <tbody *ngIf="prestamos.length === 0">
                     <tr>
-                      <td colspan="8" class="text-center">No hay registros disponibles</td>
+                      <td colspan="7" class="text-center">No hay registros disponibles</td>
                     </tr>
                   </tbody>
                   <tbody *ngIf="prestamos.length > 0">
                     <tr *ngFor="let prestamo of prestamos">
-                      <td>{{ prestamo.nombre?.nombre }}</td>
-                      <td>{{ prestamo.titulo?.titulo }}</td>
+                      <td>{{ prestamo.usuario.nombre }}</td>
+                      <td>{{ prestamo.libro.titulo }}</td>
                       <td>{{ prestamo.fechaPrestamo | date: 'yyyy-MM-dd' }}</td>
                       <td>{{ prestamo.fechaDevolucion | date: 'yyyy-MM-dd' }}</td>
-                      <td>{{ prestamo.estado }}</td>
-                      <td>{{ prestamo.fechaEntrega | date: 'yyyy-MM-dd' }}</td>
+                      <td>
+                        <span [ngClass]="{
+                          'badge bg-warning text-white': prestamo.estado === 'PRESTADO',
+                          'badge bg-success text-white': prestamo.estado === 'DEVUELTO',
+                          'badge bg-danger text-white': prestamo.estado === 'VENCIDO'
+                        }" style="font-size: 0.9rem; padding: 0.5em 0.75em; border-radius: 1rem; color: white;">
+                          {{ prestamo.estado }}
+                        </span>
+                      </td>
+                      <td>
+                        <span *ngIf="prestamo.fechaEntrega; else noEntregado">
+                          {{ prestamo.fechaEntrega | date: 'd \'de\' MMMM \'de\' y' }}
+                        </span>
+                        <ng-template #noEntregado>
+                          <span class="text-muted fst-italic">No se ha entregado</span>
+                        </ng-template>
+                      </td>
                       <td class="text-center">
                         <button class="btn btn-outline-primary btn-sm" title="Editar préstamo" (click)="abrirModoEdicion(prestamo)">
                           <i class="fa fa-edit"></i>
@@ -84,80 +99,116 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="crearPrestamoModalLabel">{{ titleModal }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="form">
-          <div class="mb-3">
-            <div *ngIf="form.get('nombre')?.hasError('required') && form.get('nombre')?.touched" class="text-danger">
-              El nombre es requerido.
+        <form [formGroup]="form" (ngSubmit)="guardarActualizarPrestamo()">
+          <div class="row">
+            <!-- Campo solo lectura para el nombre del usuario (en modo edición) -->
+            <div class="col-12" *ngIf="modoEdicion">
+              <div class="mb-3">
+                <label for="nombreUsuario" class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="nombreUsuario" [value]="prestamoSelected?.usuario?.nombre" readonly>
+              </div>
+            </div>
+
+            <!-- Campo solo lectura para el título del libro (en modo edición) -->
+            <div class="col-12" *ngIf="modoEdicion">
+              <div class="mb-3">
+                <label for="tituloLibro" class="form-label">Libro</label>
+                <input type="text" class="form-control" id="tituloLibro" [value]="prestamoSelected?.libro?.titulo" readonly>
+              </div>
+            </div>
+
+            <!-- Campo para editar el ID del usuario (solo si no es edición) -->
+            <div class="col-12" *ngIf="!modoEdicion">
+              <div class="mb-3">
+                <label for="idUsuario" class="form-label">Seleccionar Usuario</label>
+                <select id="idUsuario" class="form-select" formControlName="idUsuario"
+                  [ngClass]="{ 'is-invalid': f['idUsuario'].invalid && (f['idUsuario'].touched || f['idUsuario'].dirty) }">
+                  <option *ngFor="let usuario of usuarios" [value]="usuario.idUsuario">{{ usuario.nombre }}</option>
+                </select>
+                <div *ngIf="f['idUsuario'].invalid && (f['idUsuario'].touched || f['idUsuario'].dirty)" class="invalid-feedback">
+                  El usuario es obligatorio.
+                </div>
+              </div>
+            </div>
+
+            <!-- Campo para editar el ID del libro (solo si no es edición) -->
+            <div class="col-12" *ngIf="!modoEdicion">
+              <div class="mb-3">
+                <label for="idLibro" class="form-label">Seleccionar Libro</label>
+                <select id="idLibro" class="form-select" formControlName="idLibro"
+                  [ngClass]="{ 'is-invalid': f['idLibro'].invalid && (f['idLibro'].touched || f['idLibro'].dirty) }">
+                  <option *ngFor="let libro of libros" [value]="libro.idLibro">{{ libro.titulo }}</option>
+                </select>
+                <div *ngIf="f['idLibro'].invalid && (f['idLibro'].touched || f['idLibro'].dirty)" class="invalid-feedback">
+                  El libro es obligatorio.
+                </div>
+              </div>
+            </div>
+
+            <!-- Campo para editar la fecha de préstamo -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="fechaPrestamo" class="form-label">Fecha de Préstamo</label>
+                <input type="date" class="form-control" id="fechaPrestamo" formControlName="fechaPrestamo"
+                  [ngClass]="{ 'is-invalid': f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty) }" />
+                <div *ngIf="f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty)" class="invalid-feedback">
+                  La fecha de préstamo es obligatoria.
+                </div>
+              </div>
+            </div>
+
+            <!-- Campo para editar la fecha de devolución -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="fechaDevolucion" class="form-label">Fecha de Devolución</label>
+                <input type="date" class="form-control" id="fechaDevolucion" formControlName="fechaDevolucion"
+                  [ngClass]="{ 'is-invalid': f['fechaDevolucion'].invalid && (f['fechaDevolucion'].touched || f['fechaDevolucion'].dirty) }" />
+                <div *ngIf="f['fechaDevolucion'].invalid && (f['fechaDevolucion'].touched || f['fechaDevolucion'].dirty)" class="invalid-feedback">
+                  La fecha de devolución es obligatoria.
+                </div>
+              </div>
+            </div>
+
+            <!-- Campo para editar el estado -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="estado" class="form-label">Estado</label>
+                <select id="estado" class="form-select" formControlName="estado"
+                  [ngClass]="{ 'is-invalid': f['estado'].invalid && (f['estado'].touched || f['estado'].dirty) }">
+                  <option value="PRESTADO">Prestado</option>
+                  <option value="DEVUELTO">Devuelto</option>
+                  <option value="VENCIDO">Vencido</option>
+                </select>
+                <div *ngIf="f['estado'].invalid && (f['estado'].touched || f['estado'].dirty)" class="invalid-feedback">
+                  El estado es obligatorio.
+                </div>
+              </div>
+            </div>
+
+            <!-- Campo para editar la fecha de entrega -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
+                <input type="date" class="form-control" id="fechaEntrega" formControlName="fechaEntrega"
+                  [ngClass]="{ 'is-invalid': f['fechaEntrega'].invalid && (f['fechaEntrega'].touched || f['fechaEntrega'].dirty) }" />
+                <div *ngIf="f['fechaEntrega'].invalid && (f['fechaEntrega'].touched || f['fechaEntrega'].dirty)" class="invalid-feedback">
+                  La fecha de entrega es obligatoria.
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="mb-3">
-            <label for="idUsuario" class="form-label">Usuario</label>
-            <select class="form-select" formControlName="idUsuario" id="idUsuario">
-              <option [value]="''" disabled>Seleccione un usuario</option>
-              <option *ngFor="let usuario of usuarios" [value]="usuario.idUsuario">
-                {{ usuario.nombre }}
-              </option>
-            </select>
-            <div *ngIf="form.get('idUsuario')?.hasError('required') && form.get('idUsuario')?.touched" class="text-danger">
-              El usuario es requerido.
-            </div>
+          <!-- Botones de acción -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">
+              {{ modoFormulario === 'C' ? 'Crear' : 'Actualizar' }}
+            </button>
           </div>
-
-          <div class="mb-3">
-            <label for="idLibro" class="form-label">Libro</label>
-            <select class="form-select" formControlName="idLibro" id="idLibro">
-              <option [value]="''" disabled>Seleccione un libro</option>
-              <option *ngFor="let libro of libros" [value]="libro.idLibro">
-                {{ libro.titulo }}
-              </option>
-            </select>
-            <div *ngIf="form.get('idLibro')?.hasError('required') && form.get('idLibro')?.touched" class="text-danger">
-              El libro es requerido.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="fechaPrestamo" class="form-label">Fecha de Préstamo</label>
-            <input type="date" formControlName="fechaPrestamo" class="form-control" id="fechaPrestamo" />
-            <div *ngIf="form.get('fechaPrestamo')?.hasError('required') && form.get('fechaPrestamo')?.touched" class="text-danger">
-              La fecha de préstamo es requerida.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="fechaDevolucion" class="form-label">Fecha de Devolución</label>
-            <input type="date" formControlName="fechaDevolucion" class="form-control" id="fechaDevolucion" />
-            <div *ngIf="form.get('fechaDevolucion')?.hasError('required') && form.get('fechaDevolucion')?.touched" class="text-danger">
-              La fecha de devolución es requerida.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="estado" class="form-label">Estado</label>
-            <select class="form-select" formControlName="estado" id="estado">
-              <option value="Pendiente">PRESTADO</option>
-              <option value="Completado">DEVUELTO</option>
-              <option value="Cancelado">VENCIDO</option>
-            </select>
-            <div *ngIf="form.get('estado')?.hasError('required') && form.get('estado')?.touched" class="text-danger">
-              El estado es requerido.
-            </div>
-          </div>
-
-          <div class="mb-3">
-            <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
-            <input type="date" formControlName="fechaEntrega" class="form-control" id="fechaEntrega" />
-          </div>
-
         </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-        <button type="button" class="btn btn-primary" (click)="guardarActualizarPrestamo()">Guardar</button>
       </div>
     </div>
   </div>

@@ -4,10 +4,10 @@ import { Libro } from './libro';
 
 export interface Prestamo {
     idPrestamo?: number;
+    usuario?: Usuario;
     idUsuario: number;
-    nombre?: Usuario;
+    libro?: Libro;
     idLibro: number;
-    titulo?: Libro;
     fechaPrestamo: string;
     fechaDevolucion: string;
     estado: string;

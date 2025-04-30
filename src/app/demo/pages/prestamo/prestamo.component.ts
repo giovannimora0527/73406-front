@@ -17,10 +17,11 @@ declare const bootstrap: any;
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, NgxSpinnerModule],
   templateUrl: './prestamo.component.html',
-  styleUrl: './prestamo.component.scss',
+  styleUrls: ['./prestamo.component.scss'],
   providers: [DatePipe]
 })
 export class PrestamoComponent {
+  modoEdicion: boolean = false;
   prestamos: Prestamo[] = [];
   usuarios: Usuario[] = [];
   libros: Libro[] = [];
@@ -33,12 +34,11 @@ export class PrestamoComponent {
   prestamoSelected: Prestamo;
 
   form: FormGroup = new FormGroup({
-    nombre: new FormControl(''),
-    idUsuario: new FormControl(''),
-    idLibro: new FormControl(''),
-    fechaPrestamo: new FormControl(''),
-    fechaDevolucion: new FormControl(''),
-    estado: new FormControl(''),
+    idUsuario: new FormControl('', [Validators.required]),
+    idLibro: new FormControl('', [Validators.required]),
+    fechaPrestamo: new FormControl('', [Validators.required]),
+    fechaDevolucion: new FormControl('', [Validators.required]),
+    estado: new FormControl('', [Validators.required]),
     fechaEntrega: new FormControl('')
   });
 
@@ -56,9 +56,8 @@ export class PrestamoComponent {
 
   cargarFormulario() {
     this.form = this.formBuilder.group({
-      nombre: ['', [Validators.required]],
-      idUsuario: [null, [Validators.required]],
-      idLibro: [null, [Validators.required]],
+      idUsuario: ['', [Validators.required]],
+      idLibro: ['', [Validators.required]],
       fechaPrestamo: ['', [Validators.required]],
       fechaDevolucion: ['', [Validators.required]],
       estado: ['', [Validators.required]],
@@ -121,7 +120,13 @@ export class PrestamoComponent {
       this.form.reset();
       this.form.markAsPristine();
       this.form.markAsUntouched();
+    } else if (modoForm === 'E') {
+      this.form.get('idUsuario')?.disable();
+      this.form.get('idLibro')?.disable();
+      this.form.get('fechaPrestamo')?.disable();
+      this.form.get('fechaDevolucion')?.disable();
     }
+
     const modalElement = document.getElementById('crearPrestamoModal');
     if (modalElement) {
       modalElement.blur();
@@ -134,11 +139,8 @@ export class PrestamoComponent {
   }
 
   cerrarModal() {
-    this.form.reset();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
+    // Reiniciar el formulario
     this.form.reset({
-      nombre: '',
       idUsuario: '',
       idLibro: '',
       fechaPrestamo: '',
@@ -146,25 +148,45 @@ export class PrestamoComponent {
       estado: '',
       fechaEntrega: ''
     });
+  
+    // Restablecer el estado de los controles
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+  
+    // Si se ha inicializado una instancia del modal, la cerramos
     if (this.modalInstance) {
       this.modalInstance.hide();
+      this.modalInstance = null; // Limpiar la referencia
     }
+  
+    // Restablecer el préstamo seleccionado
     this.prestamoSelected = null;
   }
+  
 
   abrirModoEdicion(prestamo: Prestamo) {
     this.crearPrestamoModal('E');
     this.prestamoSelected = prestamo;
+    this.modoEdicion = true;
+  
+    // Asignamos valores a los campos del formulario
     this.form.patchValue({
-      nombre: this.prestamoSelected.nombre,
-      idUsuario: this.prestamoSelected.idUsuario,
-      idLibro: this.prestamoSelected.idLibro,
-      fechaPrestamo: this.datePipe.transform(this.prestamoSelected.fechaPrestamo, 'yyyy-MM-dd'),
-      fechaDevolucion: this.datePipe.transform(this.prestamoSelected.fechaDevolucion, 'yyyy-MM-dd'),
-      estado: this.prestamoSelected.estado,
-      fechaEntrega: this.datePipe.transform(this.prestamoSelected.fechaEntrega, 'yyyy-MM-dd')
+      idUsuario: prestamo.idUsuario,
+      idLibro: prestamo.idLibro,
+      fechaPrestamo: this.datePipe.transform(prestamo.fechaPrestamo, 'yyyy-MM-dd'),
+      fechaDevolucion: this.datePipe.transform(prestamo.fechaDevolucion, 'yyyy-MM-dd'),
+      estado: prestamo.estado,
+      fechaEntrega: this.datePipe.transform(prestamo.fechaEntrega, 'yyyy-MM-dd')
     });
+  
+    // Opcionalmente mostrar datos adicionales si tienes campos visibles para eso
+    const usuarioEncontrado = this.usuarios.find(u => u.idUsuario === prestamo.idUsuario);
+    const libroEncontrado = this.libros.find(l => l.idLibro === prestamo.idLibro);
+    this.form.get('nombre')?.setValue(usuarioEncontrado?.nombre || '');
+    this.form.get('tituloLibro')?.setValue(libroEncontrado?.titulo || '');
   }
+  
+  
 
   guardarActualizarPrestamo() {
     if (this.form.valid) {
@@ -185,16 +207,15 @@ export class PrestamoComponent {
           }
         });
       } else {
-        const usuario = this.prestamoSelected.idUsuario;
-        const libro = this.prestamoSelected.idLibro;
-        this.prestamoSelected = {
+        const formValue = this.form.getRawValue();
+        // Solo actualizamos estado y fechaEntrega
+        const updatedPrestamo = {
           ...this.prestamoSelected,
-          ...this.form.getRawValue()
+          estado: formValue.estado,
+          fechaEntrega: formValue.fechaEntrega
         };
-        this.prestamoSelected.idUsuario = usuario;
-        this.prestamoSelected.idLibro = libro;
 
-        this.prestamoService.actualizarPrestamo(this.prestamoSelected).subscribe({
+        this.prestamoService.actualizarPrestamo(updatedPrestamo).subscribe({
           next: (data) => {
             this.showMessage('Éxito', data.message, 'success');
             this.cargarListaPrestamos();
