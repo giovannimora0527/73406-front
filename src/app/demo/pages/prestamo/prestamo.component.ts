@@ -33,14 +33,7 @@ export class PrestamoComponent {
 
   prestamoSelected: Prestamo;
 
-  form: FormGroup = new FormGroup({
-    idUsuario: new FormControl('', [Validators.required]),
-    idLibro: new FormControl('', [Validators.required]),
-    fechaPrestamo: new FormControl('', [Validators.required]),
-    fechaDevolucion: new FormControl('', [Validators.required]),
-    estado: new FormControl('', [Validators.required]),
-    fechaEntrega: new FormControl('')
-  });
+  form: FormGroup;
 
   constructor(
     private prestamoService: PrestamoService,
@@ -48,9 +41,9 @@ export class PrestamoComponent {
     private datePipe: DatePipe,
     private spinner: NgxSpinnerService
   ) {
-    this.cargarUsuarios(); // Cargar usuarios y libros primero
+    this.cargarUsuarios();
     this.cargarLibros();
-    this.cargarListaPrestamos(); // Luego préstamos
+    this.cargarListaPrestamos();
     this.cargarFormulario();
   }
 
@@ -60,9 +53,18 @@ export class PrestamoComponent {
       idLibro: ['', [Validators.required]],
       fechaPrestamo: ['', [Validators.required]],
       fechaDevolucion: ['', [Validators.required]],
-      estado: ['', [Validators.required]],
+      estado: [''],
       fechaEntrega: ['']
+      
     });
+  
+    if (this.modoFormulario === 'E') {
+      this.form.addControl('estado', new FormControl('', [Validators.required]));
+      this.form.addControl('fechaEntrega', new FormControl(''));
+    }
+    
+
+    // Agregamos el campo estado solo en modo edición más adelante si se requiere
   }
 
   get f(): { [key: string]: AbstractControl } {
@@ -74,7 +76,6 @@ export class PrestamoComponent {
     this.prestamoService.getPrestamos().subscribe({
       next: (data) => {
         this.prestamos = data;
-        // ENRIQUECER DATOS: Agregar nombre de usuario y título de libro
         this.prestamos.forEach((prestamo) => {
           const usuarioEncontrado = this.usuarios.find(u => u.idUsuario === prestamo.idUsuario);
           const libroEncontrado = this.libros.find(l => l.idLibro === prestamo.idLibro);
@@ -116,15 +117,21 @@ export class PrestamoComponent {
     this.modoFormulario = modoForm;
     this.titleModal = modoForm === 'C' ? 'Crear Prestamo' : 'Editar Prestamo';
 
-    if (modoForm === 'C') {
-      this.form.reset();
-      this.form.markAsPristine();
-      this.form.markAsUntouched();
-    } else if (modoForm === 'E') {
+    this.form.reset();
+    this.form.markAsPristine();
+    this.form.markAsUntouched();
+
+    if (modoForm === 'E') {
+      this.form.addControl('estado', new FormControl('', [Validators.required]));
       this.form.get('idUsuario')?.disable();
       this.form.get('idLibro')?.disable();
       this.form.get('fechaPrestamo')?.disable();
       this.form.get('fechaDevolucion')?.disable();
+      this.form.get('estado')?.disable();
+    } else {
+      if (this.form.contains('estado')) {
+        this.form.removeControl('estado');
+      }
     }
 
     const modalElement = document.getElementById('crearPrestamoModal');
@@ -139,37 +146,27 @@ export class PrestamoComponent {
   }
 
   cerrarModal() {
-    // Reiniciar el formulario
-    this.form.reset({
-      idUsuario: '',
-      idLibro: '',
-      fechaPrestamo: '',
-      fechaDevolucion: '',
-      estado: '',
-      fechaEntrega: ''
-    });
-  
-    // Restablecer el estado de los controles
+    this.form.reset();
     this.form.markAsPristine();
     this.form.markAsUntouched();
-  
-    // Si se ha inicializado una instancia del modal, la cerramos
+
+    if (this.form.contains('estado')) {
+      this.form.removeControl('estado');
+    }
+
     if (this.modalInstance) {
       this.modalInstance.hide();
-      this.modalInstance = null; // Limpiar la referencia
+      this.modalInstance = null;
     }
-  
-    // Restablecer el préstamo seleccionado
+
     this.prestamoSelected = null;
   }
-  
 
   abrirModoEdicion(prestamo: Prestamo) {
     this.crearPrestamoModal('E');
     this.prestamoSelected = prestamo;
     this.modoEdicion = true;
-  
-    // Asignamos valores a los campos del formulario
+
     this.form.patchValue({
       idUsuario: prestamo.idUsuario,
       idLibro: prestamo.idLibro,
@@ -178,25 +175,22 @@ export class PrestamoComponent {
       estado: prestamo.estado,
       fechaEntrega: this.datePipe.transform(prestamo.fechaEntrega, 'yyyy-MM-dd')
     });
-  
-    // Opcionalmente mostrar datos adicionales si tienes campos visibles para eso
-    const usuarioEncontrado = this.usuarios.find(u => u.idUsuario === prestamo.idUsuario);
-    const libroEncontrado = this.libros.find(l => l.idLibro === prestamo.idLibro);
-    this.form.get('nombre')?.setValue(usuarioEncontrado?.nombre || '');
-    this.form.get('tituloLibro')?.setValue(libroEncontrado?.titulo || '');
   }
-  
-  
 
   guardarActualizarPrestamo() {
     if (this.form.valid) {
-      if (this.modoFormulario.includes('C')) {
-        const formValue = this.form.getRawValue();
-        formValue.fechaPrestamo = this.datePipe.transform(formValue.fechaPrestamo, 'yyyy-MM-dd');
-        formValue.fechaDevolucion = this.datePipe.transform(formValue.fechaDevolucion, 'yyyy-MM-dd');
-        formValue.fechaEntrega = this.datePipe.transform(formValue.fechaEntrega, 'yyyy-MM-dd');
+      const rawValue = this.form.getRawValue();
 
-        this.prestamoService.guardarPrestamo(formValue).subscribe({
+      if (this.modoFormulario.includes('C')) {
+        const nuevoPrestamo = {
+          idUsuario: rawValue.idUsuario,
+          idLibro: rawValue.idLibro,
+          fechaPrestamo: this.datePipe.transform(rawValue.fechaPrestamo, 'yyyy-MM-dd'),
+          fechaDevolucion: this.datePipe.transform(rawValue.fechaDevolucion, 'yyyy-MM-dd'),
+          fechaEntrega: this.datePipe.transform(rawValue.fechaEntrega, 'yyyy-MM-dd')
+        };
+
+        this.prestamoService.guardarPrestamo(nuevoPrestamo).subscribe({
           next: (data) => {
             this.showMessage('Éxito', data.message, 'success');
             this.cargarListaPrestamos();
@@ -207,12 +201,10 @@ export class PrestamoComponent {
           }
         });
       } else {
-        const formValue = this.form.getRawValue();
-        // Solo actualizamos estado y fechaEntrega
         const updatedPrestamo = {
           ...this.prestamoSelected,
-          estado: formValue.estado,
-          fechaEntrega: formValue.fechaEntrega
+          estado: rawValue.estado,
+          fechaEntrega: this.datePipe.transform(rawValue.fechaEntrega, 'yyyy-MM-dd')
         };
 
         this.prestamoService.actualizarPrestamo(updatedPrestamo).subscribe({

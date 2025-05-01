@@ -99,7 +99,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="crearPrestamoModalLabel">{{ titleModal }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
         <form [formGroup]="form" (ngSubmit)="guardarActualizarPrestamo()">
@@ -111,7 +111,7 @@
                 <input type="text" class="form-control" id="nombreUsuario" [value]="prestamoSelected?.usuario?.nombre" readonly>
               </div>
             </div>
-
+        
             <!-- Campo solo lectura para el título del libro (en modo edición) -->
             <div class="col-12" *ngIf="modoEdicion">
               <div class="mb-3">
@@ -119,8 +119,8 @@
                 <input type="text" class="form-control" id="tituloLibro" [value]="prestamoSelected?.libro?.titulo" readonly>
               </div>
             </div>
-
-            <!-- Campo para editar el ID del usuario (solo si no es edición) -->
+        
+            <!-- Campo para seleccionar el usuario (solo si NO es edición) -->
             <div class="col-12" *ngIf="!modoEdicion">
               <div class="mb-3">
                 <label for="idUsuario" class="form-label">Seleccionar Usuario</label>
@@ -133,8 +133,8 @@
                 </div>
               </div>
             </div>
-
-            <!-- Campo para editar el ID del libro (solo si no es edición) -->
+        
+            <!-- Campo para seleccionar el libro (solo si NO es edición) -->
             <div class="col-12" *ngIf="!modoEdicion">
               <div class="mb-3">
                 <label for="idLibro" class="form-label">Seleccionar Libro</label>
@@ -147,7 +147,7 @@
                 </div>
               </div>
             </div>
-
+        
             <!-- Campo para editar la fecha de préstamo -->
             <div class="col-12">
               <div class="mb-3">
@@ -159,7 +159,7 @@
                 </div>
               </div>
             </div>
-
+        
             <!-- Campo para editar la fecha de devolución -->
             <div class="col-12">
               <div class="mb-3">
@@ -171,36 +171,23 @@
                 </div>
               </div>
             </div>
-
-            <!-- Campo para editar el estado -->
-            <div class="col-12">
+            <!-- Campo solo lectura para el estado (en modo edición) -->
+            <div class="col-12" *ngIf="modoEdicion">
               <div class="mb-3">
-                <label for="estado" class="form-label">Estado</label>
-                <select id="estado" class="form-select" formControlName="estado"
-                  [ngClass]="{ 'is-invalid': f['estado'].invalid && (f['estado'].touched || f['estado'].dirty) }">
-                  <option value="PRESTADO">Prestado</option>
-                  <option value="DEVUELTO">Devuelto</option>
-                  <option value="VENCIDO">Vencido</option>
-                </select>
-                <div *ngIf="f['estado'].invalid && (f['estado'].touched || f['estado'].dirty)" class="invalid-feedback">
-                  El estado es obligatorio.
-                </div>
+                <label for="nombreEstado" class="form-label">Estado</label>
+                <input type="text" class="form-control" id="nombreEstado" [value]="prestamoSelected?.estado" readonly>
               </div>
             </div>
-
-            <!-- Campo para editar la fecha de entrega -->
-            <div class="col-12">
+        
+            <!-- Campo para editar la fecha de entrega (solo si es edición) -->
+            <div class="col-12" *ngIf="modoFormulario === 'E'">
               <div class="mb-3">
                 <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
-                <input type="date" class="form-control" id="fechaEntrega" formControlName="fechaEntrega"
-                  [ngClass]="{ 'is-invalid': f['fechaEntrega'].invalid && (f['fechaEntrega'].touched || f['fechaEntrega'].dirty) }" />
-                <div *ngIf="f['fechaEntrega'].invalid && (f['fechaEntrega'].touched || f['fechaEntrega'].dirty)" class="invalid-feedback">
-                  La fecha de entrega es obligatoria.
-                </div>
+                <input type="date" class="form-control" id="fechaEntrega" formControlName="fechaEntrega">
               </div>
             </div>
           </div>
-
+        
           <!-- Botones de acción -->
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>

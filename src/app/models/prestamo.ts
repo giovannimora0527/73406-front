@@ -10,7 +10,7 @@ export interface Prestamo {
     idLibro: number;
     fechaPrestamo: string;
     fechaDevolucion: string;
-    estado: string;
+    estado?: string;
     fechaEntrega?: string;
   }
   
