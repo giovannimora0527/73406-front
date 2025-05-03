@@ -1,34 +1,24 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Libro } from 'src/app/models/libro';
-import { LibroRs } from 'src/app/models/libroRs';
 import { BackendService } from 'src/app/services/backend.service';
 import { environment } from 'src/environments/environment';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LibroService {
-  private api = "libro";
 
-  constructor(private backendService: BackendService) {
-    this.testService();
+  private readonly api = `libro`;
+  
+  constructor(private readonly backendService: BackendService) { 
+   
   }
 
-testService() {
-    this.backendService.get(environment.apiUrl, this.api, "test");
-  }
-
-  getLibro(): Observable<Libro[]> {
+  getLibros(): Observable<Libro[]> {
     return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
-
-  guardarLibros(Libro: Libro): Observable<LibroRs> {
-    return this.backendService.post(environment.apiUrl, this.api, "guardar-usuario", Libro);
-  }
-
-  actualizarLibro(Libro: Libro): Observable<LibroRs> {
-    return this.backendService.post(environment.apiUrl, this.api, "actualizar-usuario", Libro);
+  getLibrosDisponibles(): Observable<Libro[]> {
+    return this.backendService.get(environment.apiUrl, this.api, "listar-disponibles");
   }
 }
-

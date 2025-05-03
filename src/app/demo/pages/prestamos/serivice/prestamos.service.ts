@@ -1,27 +1,33 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { Prestamo } from 'src/app/models/prestamos';
+import { PrestamoRs } from 'src/app/models/prestamosRs';
 import { BackendService } from 'src/app/services/backend.service';
 import { environment } from 'src/environments/environment';
+
 @Injectable({
   providedIn: 'root'
 })
-export class PrestamosService {
-  urlapi = environment.apiUrl;
+export class PrestamoService {
 
-  constructor(private backendService: BackendService) {
-    this.test();
-  
+  private api = `prestamo`;
+  constructor(private backendService: BackendService) { 
+    this.testService();
   }
-  test() {
-    this.backendService.get(this.urlapi, "app", "test").subscribe(
-      {
-        next: (data) => {
-          console.log(data);
-        },
-        error: (error) => {
-          console.log(error);
-        }
-      }
-    );
+
+  testService(){
+  this.backendService.get(environment.apiUrl, this.api, "test");  
   }
+
+  getPrestamos(): Observable<Prestamo[]> {
+    return this.backendService.get(environment.apiUrl, this.api, "listar");
+  }
+
+  guardarPrestamo(prestamo:Prestamo):Observable<PrestamoRs>{
+    return this.backendService.post(environment.apiUrl, this.api,"guardar-prestamo" ,prestamo)
+  }  
+
+  actualizarPrestamo(prestamo: Prestamo): Observable<PrestamoRs>{
+    return this.backendService.post(environment.apiUrl, this.api, "actualizar-prestamo",prestamo)
+  }  
 }
-

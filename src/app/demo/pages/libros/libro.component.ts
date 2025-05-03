@@ -75,7 +75,7 @@ export class LibroComponent {
   }
 
   getLibros() {
-    this.libroService.getLibro().subscribe({
+    this.libroService.getLibros().subscribe({
       next: (data) => {        
         this.libros = data;
       },
