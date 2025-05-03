@@ -24,6 +24,9 @@ export class PrestamoComponent {
   usuarios: Usuario[] = [];
   libros: Libro[] = [];
 
+  minFechaDevolucion: string = '';
+
+
   modalInstance: any;
   modoFormulario: string = '';
   titleModal: string = '';
@@ -49,13 +52,17 @@ export class PrestamoComponent {
     this.cargarFormulario();
     this.cargarUsuarios();
     this.cargarLibrosDisponibles();
+
+    const mañana = new Date();
+    mañana.setDate(mañana.getDate() + 1);
+    this.minFechaDevolucion = mañana.toISOString().split('T')[0];
+
   }
 
   cargarFormulario() {
     this.form = this.formBuilder.group({
       usuario: ['', Validators.required],
       libro: ['', Validators.required],
-      fechaPrestamo: ['', Validators.required],
       fechaDevolucion: ['', Validators.required],
       fechaEntrega: [''],
     });
@@ -157,7 +164,6 @@ export class PrestamoComponent {
         const nuevoPrestamo = {
           idUsuario: formValue.usuario,
           idLibro: formValue.libro,
-          fechaPrestamo: formValue.fechaPrestamo,
           fechaDevolucion: formValue.fechaDevolucion
         };
 
