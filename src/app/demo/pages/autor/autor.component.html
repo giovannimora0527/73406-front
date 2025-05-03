@@ -49,7 +49,7 @@
                         {{ autor.nombre }}
                       </td>
                      <td>
-                        {{ autor.nacionalidad.nombre}} <!-- editar .nombre falta para que traiga el nombre de la nacionalidad -->
+                        {{ autor.nacionalidad.nombre}}
                       </td>
                       <td>
                         {{ autor.fechaNacimiento | date: 'yyyy-MM-dd' }}
@@ -97,16 +97,16 @@
             </div>
           </div>
 
-<!-- editar .nombre falta para que traiga el nombre de la nacionalidad -->
+
           <div class="mb-3">
-            <label for="nacionalidad_id" class="form-label">Nacionalidad</label>
-            <select class="form-select" formControlName="nacionalidad" id="nacionalidad">
+            <label for="nacionalidadId" class="form-label">Nacionalidad</label>
+            <select class="form-select" formControlName="nacionalidadId" id="nacionalidad">
               <option [value]="''" disabled>Seleccione una nacionalidad</option>
-              <option *ngFor="let n of nacionalidad" [value]="n.nacionalidad">
+              <option *ngFor="let n of nacionalidad" [value]="n.nacionalidadId">
                 {{ n.nombre }}
               </option>
             </select>
-            <div *ngIf="form.get('nacionalidad_id')?.hasError('required') && form.get('nacionalidad_id')?.touched" class="text-danger">
+            <div *ngIf="form.get('nacionalidadId')?.hasError('required') && form.get('nacionalidadId')?.touched" class="text-danger">
               La nacionalidad es requerida.
             </div>
           </div>

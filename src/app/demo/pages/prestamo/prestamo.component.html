@@ -1,1 +1,214 @@
-<p>Prestamo works!</p>
+<!-- Spinner de carga -->
+<ngx-spinner
+  bdColor="rgba(0,0,0,0.5)"
+  size="medium"
+  color="#fff"
+  type="ball-clip-rotate"
+  [fullScreen]="true"
+>
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <p style="color: white; font-size: 1.2rem; margin-top: 1rem;">{{ msjSpinner }}</p>
+  </div>
+</ngx-spinner>
+
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <div class="row">
+        <div class="col">
+          <button class="btn btn-outline-primary btn-sm" (click)="crearPrestamoModal('C')" title="Crear un préstamo nuevo">
+            <i class="fa fa-plus"></i>
+            &nbsp;Nuevo Préstamo
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Usuario</th>
+                      <th>Libro</th>
+                      <th>Fecha de Préstamo</th>
+                      <th>Fecha de Devolución</th>
+                      <th>Estado</th>
+                      <th>Fecha de Entrega</th>
+                      <th class="text-center">Opciones</th>
+                    </tr>
+                  </thead>
+                  <tbody *ngIf="prestamos.length === 0">
+                    <tr>
+                      <td colspan="7" class="text-center">No hay registros disponibles</td>
+                    </tr>
+                  </tbody>
+                  <tbody *ngIf="prestamos.length > 0">
+                    <tr *ngFor="let prestamo of prestamos">
+                      <td>{{ prestamo.usuario?.nombre }}</td>
+                      <td>{{ prestamo.libro?.titulo }}</td>
+                      <td>{{ prestamo.fechaPrestamo | date: 'yyyy-MM-dd' }}</td>
+                      <td>{{ prestamo.fechaDevolucion | date: 'yyyy-MM-dd' }}</td>
+                      <td>
+                        <span class="badge" [ngClass]="{
+                          'bg-warning text-dark': prestamo.estado === 'PRESTADO',
+                          'bg-success': prestamo.estado === 'DEVUELTO',
+                          'bg-danger': prestamo.estado === 'VENCIDO'
+                        }" style="font-size: 0.9rem; padding: 0.5em 0.75em; border-radius: 1rem;">
+                          {{ prestamo.estado }}
+                        </span>
+                      </td>
+                      <td>
+                        <span *ngIf="prestamo.fechaEntrega; else noEntregado">
+                          {{ prestamo.fechaEntrega | date: 'd \'de\' MMMM \'de\' y' }}
+                        </span>
+                        <ng-template #noEntregado>
+                          <span class="text-muted fst-italic">No se ha entregado</span>
+                        </ng-template>
+                      </td>
+                      <td class="text-center">
+                        <button class="btn btn-outline-primary btn-sm" title="Editar préstamo" (click)="abrirModoEdicion(prestamo)">
+                          <i class="fa fa-edit"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de creación -->
+<div
+  class="modal fade"
+  id="crearPrestamoModal"
+  tabindex="-1"
+  aria-labelledby="crearPrestamoModalLabel"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  *ngIf="modoFormulario === 'C'"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="crearPrestamoModalLabel">{{ titleModal }}</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="guardarActualizarPrestamo()">
+          <div class="row">
+            <!-- Selección de Usuario -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="idUsuario" class="form-label">Seleccionar Usuario</label>
+                <select id="idUsuario" class="form-select" formControlName="idUsuario"
+                  [ngClass]="{ 'is-invalid': f['idUsuario'].invalid && (f['idUsuario'].touched || f['idUsuario'].dirty) }">
+                  <option value="">Seleccione un usuario</option>
+                  <option *ngFor="let usuario of usuarios" [value]="usuario.idUsuario">{{ usuario.nombre }}</option>
+                </select>
+                <div *ngIf="f['idUsuario'].invalid && (f['idUsuario'].touched || f['idUsuario'].dirty)" class="invalid-feedback">
+                  El usuario es obligatorio.
+                </div>
+              </div>
+            </div>
+
+            <!-- Selección de Libro -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="idLibro" class="form-label">Seleccionar Libro</label>
+                <select id="idLibro" class="form-select" formControlName="idLibro"
+                  [ngClass]="{ 'is-invalid': f['idLibro'].invalid && (f['idLibro'].touched || f['idLibro'].dirty) }">
+                  <option value="">Seleccione un libro</option>
+                  <option *ngFor="let libro of librosDisponibles" [value]="libro.idLibro">{{ libro.titulo }}</option>
+                </select>
+                <div *ngIf="f['idLibro'].invalid && (f['idLibro'].touched || f['idLibro'].dirty)" class="invalid-feedback">
+                  El libro es obligatorio.
+                </div>
+              </div>
+            </div>
+
+            <!-- Fecha de Préstamo (Automática) -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="fechaPrestamo" class="form-label">Fecha de Préstamo</label>
+                <input type="date" class="form-control" id="fechaPrestamo" formControlName="fechaPrestamo" readonly
+                  [ngClass]="{ 'is-invalid': f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty) }" />
+                <div *ngIf="f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty)" class="invalid-feedback">
+                  La fecha de préstamo es obligatoria.
+                </div>
+                <small class="form-text text-muted">La fecha de préstamo se establece automáticamente a la fecha actual.</small>
+              </div>
+            </div>
+
+            <!-- Fecha de Devolución -->
+            <div class="col-12">
+              <div class="mb-3">
+                <label for="fechaDevolucion" class="form-label">Fecha de Devolución</label>
+                <input type="date" class="form-control" id="fechaDevolucion" formControlName="fechaDevolucion"
+                  [ngClass]="{ 'is-invalid': f['fechaDevolucion'].invalid && (f['fechaDevolucion'].touched || f['fechaDevolucion'].dirty) }" />
+                <div *ngIf="f['fechaDevolucion'].invalid && (f['fechaDevolucion'].touched || f['fechaDevolucion'].dirty)" class="invalid-feedback">
+                  <span *ngIf="f['fechaDevolucion'].errors?.['required']">La fecha de devolución es obligatoria.</span>
+                  <span *ngIf="f['fechaDevolucion'].errors?.['fechaInvalida']">La fecha de devolución debe ser al menos un día después de la fecha actual.</span>
+                </div>
+                <small class="form-text text-muted">La fecha de devolución debe ser al menos un día después de la fecha actual.</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Crear</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de edición (solo fecha de entrega) -->
+<div
+  class="modal fade"
+  id="editarPrestamoModal"
+  tabindex="-1"
+  aria-labelledby="editarPrestamoModalLabel"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+  *ngIf="modoFormulario === 'E'"
+>
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editarPrestamoModalLabel">Editar Préstamo</h5>
+        <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formEdicion" (ngSubmit)="guardarActualizarPrestamo()">
+          <!-- Fecha de entrega (único campo) -->
+          <div class="mb-3">
+            <label for="fechaEntrega" class="form-label">Fecha de entrega</label>
+            <input type="date" class="form-control" id="fechaEntrega" formControlName="fechaEntrega" />
+            <small class="form-text text-muted">
+              Al registrar la fecha de entrega, el préstamo se marcará como DEVUELTO.
+              Si la fecha es posterior a la fecha de devolución, se marcará como VENCIDO.
+            </small>
+          </div>
+
+          <!-- Botones de acción -->
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Registrar Entrega</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

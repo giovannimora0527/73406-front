@@ -1,8 +1,16 @@
+import { Usuario } from './usuario';
+import { Libro } from './libro';
+
+
 export interface Prestamo {
-    id_prestamo?: number;
-    id_usuario: number;
-    id_libro: number;
-    fecha_prestamo: Date;
-    fecha_devolucion: Date;
-    estado: string;
-}
+    idPrestamo?: number;
+    usuario?: Usuario;
+    idUsuario: number;
+    libro?: Libro;
+    idLibro: number;
+    fechaPrestamo: string;
+    fechaDevolucion: string;
+    estado?: string;
+    fechaEntrega?: string;
+  }
+  

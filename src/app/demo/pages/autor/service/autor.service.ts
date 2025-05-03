@@ -20,8 +20,7 @@ export class AutorService {
     return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
   getNacionalidades(): Observable<Nacionalidad[]> {
-    return this.backendService.get(environment.apiUrl, 'autor', 'listarnacionalidad');
-    
+    return this.backendService.get(environment.apiUrl, 'autor', 'listarnacionalidad');    
   }
   getNacionalidad(): Observable<any[]> {
     return this.backendService.get(environment.apiUrl, 'autor', 'listar-por-nacionalidad');
