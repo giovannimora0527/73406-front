@@ -1,8 +1,14 @@
-export interface Prestamo {
-    id_prestamo?: number;
-    id_usuario: number;
-    id_libro: number;
-    fecha_prestamo: Date;
-    fecha_devolucion: Date;
-    estado: string;
+import { Libro } from "./libro";
+import { Usuario } from "./usuario";
+
+export class Prestamo{
+    idPrestamo?:number;
+    usuario?:Usuario
+    libro?:Libro
+    fechaPrestamo?: Date;
+    fechaDevolucion?: Date;
+    estado?:string;
+    fechaEntrega?: Date | null;
+    idUsuario?:number
+    idLibro?:number
 }
