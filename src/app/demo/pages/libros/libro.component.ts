@@ -73,8 +73,13 @@ export class LibroComponent {
   }
 
   getLibros() {
+<<<<<<< HEAD
     this.libroService.getLibro().subscribe({
       next: (data) => {
+=======
+    this.libroService.getLibros().subscribe({
+      next: (data) => {        
+>>>>>>> 93388edb1f30850556f6a86be438c61b8bfd57c1
         this.libros = data;
       },
       error: (error) => {
