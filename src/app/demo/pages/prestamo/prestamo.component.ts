@@ -187,7 +187,7 @@ export class PrestamoComponent implements OnInit {
         if (!this.modalCreacionInstance) {
           this.modalCreacionInstance = new bootstrap.Modal(modalElement);
         }
-        this.modalCreacionInstance.showthis.modalCreacionInstance.show();
+        this.modalCreacionInstance.show();
       }
     } else if (modoForm === 'E') {
       // Mostrar modal de edición

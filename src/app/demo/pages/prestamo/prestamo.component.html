@@ -48,16 +48,16 @@
                   </tbody>
                   <tbody *ngIf="prestamos.length > 0">
                     <tr *ngFor="let prestamo of prestamos">
-                      <td>{{ prestamo.usuario?.nombre }}</td>
-                      <td>{{ prestamo.libro?.titulo }}</td>
+                      <td>{{ prestamo.nombreUsuario }}</td>
+                      <td>{{ prestamo.tituloLibro }}</td>
                       <td>{{ prestamo.fechaPrestamo | date: 'yyyy-MM-dd' }}</td>
                       <td>{{ prestamo.fechaDevolucion | date: 'yyyy-MM-dd' }}</td>
                       <td>
-                        <span class="badge" [ngClass]="{
-                          'bg-warning text-dark': prestamo.estado === 'PRESTADO',
-                          'bg-success': prestamo.estado === 'DEVUELTO',
-                          'bg-danger': prestamo.estado === 'VENCIDO'
-                        }" style="font-size: 0.9rem; padding: 0.5em 0.75em; border-radius: 1rem;">
+                        <span class="fw-bold" [ngClass]="{
+                          'text-warning': prestamo.estado === 'PRESTADO',
+                          'text-success': prestamo.estado === 'DEVUELTO',
+                          'text-danger': prestamo.estado === 'VENCIDO'
+                        }" style="font-size: 0.9rem;">
                           {{ prestamo.estado }}
                         </span>
                       </td>

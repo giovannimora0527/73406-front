@@ -13,7 +13,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root'
 })
 export class PrestamoService {
-  private api = 'prestamo'; // Este endpoint lo ajustas si en backend es diferente
+  private api = 'prestamos'; // Este endpoint lo ajustas si en backend es diferente
 
   /**
    * Constructor del servicio

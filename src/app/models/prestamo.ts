@@ -12,5 +12,7 @@ export interface Prestamo {
     fechaDevolucion: string;
     estado?: string;
     fechaEntrega?: string;
+    tituloLibro: string;
+    nombreUsuario: string;
   }
   
