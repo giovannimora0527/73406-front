@@ -14,7 +14,6 @@ export interface NavigationItem {
 
   children?: NavigationItem[];
 }
-
 export const NavigationItems: NavigationItem[] = [
   {
     id: 'navigation',
@@ -55,6 +54,6 @@ export const NavigationItems: NavigationItem[] = [
         classes: 'nav-item'
       }
     ]
-  }
+  },
   /* ---------- Nuevos menus aqui -------------  */
 ];

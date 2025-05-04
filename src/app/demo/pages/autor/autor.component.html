@@ -1,11 +1,16 @@
+<!-- Spinner de carga -->
 <ngx-spinner
-  bdColor="rgba(51,51,51,0.8)"
+  bdColor="rgba(0,0,0,0.5)"
   size="medium"
   color="#fff"
-  type="ball-scale-multiple"
-  [fullScreen]="true">
-  {{msjSpinner}}...
+  type="ball-clip-rotate"
+  [fullScreen]="true"
+>
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+    <p style="color: white; font-size: 1.2rem; margin-top: 1rem;">{{ msjSpinner }}</p>
+  </div>
 </ngx-spinner>
+
 <div class="container">
   <div class="card">
     <div class="card-header">
@@ -24,13 +29,13 @@
           <div class="card">
             <div class="card-body">
               <div class="table table-responsive">
-                <table class="table table-responsive table-stripped">
+                <table class="table table-responsive table-striped">
                   <thead>
                     <tr>
                       <th>Nombre</th>
                       <th>Nacionalidad</th>
                       <th>Fecha de nacimiento</th>
-                      <th class="text-center">Opciones</th>
+                      <th class="text-center">Opciones</th> 
                     </tr>
                   </thead>
                   <tbody *ngIf="autores.length === 0">
@@ -43,12 +48,12 @@
                       <td>
                         {{ autor.nombre }}
                       </td>
-                      <td>
-                        {{ autor.nacionalidad }}
+                     <td>
+                        {{ autor.nacionalidad.nombre}}
                       </td>
                       <td>
-                        {{ autor.fechaNacimiento | date: 'dd/MM/yyyy' }}
-                      </td>
+                        {{ autor.fechaNacimiento | date: 'yyyy-MM-dd' }}
+                       </td>
                       <td class="text-center">
                         <button class="btn btn-outline-primary btn-sm" title="Editar autor" (click)="abrirModoEdicion(autor)">
                           <i class="fa fa-edit"></i>
@@ -66,6 +71,7 @@
   </div>
 </div>
 
+<!-- Modal de creación/edición -->
 <div
   class="modal fade"
   id="crearAutorModal"
@@ -82,39 +88,36 @@
       </div>
       <div class="modal-body">
         <form [formGroup]="form">
+          
           <div class="mb-3">
             <label for="nombre" class="form-label">Nombre</label>
-            <input
-              type="text"
-              formControlName="nombre"
-              class="form-control"
-              id="nombre"
-              placeholder="Ingrese el nombre del autor"
-              [ngModel]="autorSelected?.nombre"
-            />
+            <input type="text" formControlName="nombre" class="form-control" id="nombre" placeholder="Ingrese el nombre completo" />
             <div *ngIf="form.get('nombre')?.hasError('required') && form.get('nombre')?.touched" class="text-danger">
               El nombre es requerido.
             </div>
           </div>
 
+
           <div class="mb-3">
-            <label for="nacionalidad" class="form-label">Nacionalidad</label>
-            <input type="text" formControlName="nacionalidad" class="form-control" id="nacionalidad"
-             placeholder="Ingrese la nacionalidad" [ngModel]="autorSelected?.nacionalidad"/>
-            <div *ngIf="form.get('nacionalidad')?.hasError('required') && form.get('nacionalidad')?.touched" class="text-danger">
+            <label for="nacionalidadId" class="form-label">Nacionalidad</label>
+            <select class="form-select" formControlName="nacionalidadId" id="nacionalidad">
+              <option [value]="''" disabled>Seleccione una nacionalidad</option>
+              <option *ngFor="let n of nacionalidad" [value]="n.nacionalidadId">
+                {{ n.nombre }}
+              </option>
+            </select>
+            <div *ngIf="form.get('nacionalidadId')?.hasError('required') && form.get('nacionalidadId')?.touched" class="text-danger">
               La nacionalidad es requerida.
             </div>
           </div>
 
           <div class="mb-3">
             <label for="fechaNacimiento" class="form-label">Fecha de nacimiento</label>
-            <input type="date" formControlName="fechaNacimiento" class="form-control" id="fechaNacimiento"
-             [ngModel]="autorSelected?.fechaNacimiento"/>
+            <input type="date" formControlName="fechaNacimiento" class="form-control" id="fechaNacimiento" />
             <div *ngIf="form.get('fechaNacimiento')?.hasError('required') && form.get('fechaNacimiento')?.touched" class="text-danger">
               La fecha de nacimiento es requerida.
             </div>
           </div>
-
         </form>
       </div>
       <div class="modal-footer">
