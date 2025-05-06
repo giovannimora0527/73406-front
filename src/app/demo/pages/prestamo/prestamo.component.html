@@ -103,7 +103,7 @@
       </div>
       <div class="modal-body">
         <form [formGroup]="form" (ngSubmit)="guardarActualizarPrestamo()">
-          <div class="row">
+          < class="row">
             <!-- Campo solo lectura para el nombre del usuario (en modo edición) -->
             <div class="col-12" *ngIf="modoEdicion">
               <div class="mb-3">
@@ -148,15 +148,11 @@
               </div>
             </div>
         
-            <!-- Campo para editar la fecha de préstamo -->
+            <!-- Campo de solo lectura para la fecha de préstamo -->
             <div class="col-12">
               <div class="mb-3">
                 <label for="fechaPrestamo" class="form-label">Fecha de Préstamo</label>
-                <input type="date" class="form-control" id="fechaPrestamo" formControlName="fechaPrestamo"
-                  [ngClass]="{ 'is-invalid': f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty) }" />
-                <div *ngIf="f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty)" class="invalid-feedback">
-                  La fecha de préstamo es obligatoria.
-                </div>
+                <input type="text" class="form-control" id="fechaPrestamo" [value]="fechaActual | date: 'yyyy-MM-dd'" readonly>
               </div>
             </div>
         
@@ -171,6 +167,7 @@
                 </div>
               </div>
             </div>
+            
             <!-- Campo solo lectura para el estado (en modo edición) -->
             <div class="col-12" *ngIf="modoEdicion">
               <div class="mb-3">
@@ -186,7 +183,13 @@
                 <input type="date" class="form-control" id="fechaEntrega" formControlName="fechaEntrega">
               </div>
             </div>
-          </div>
+          <!-- Agregar esto en la sección de modo edición -->
+            <div class="col-12" *ngIf="modoEdicion">
+              <div class="mb-3">
+                <label for="fechaPrestamo" class="form-label">Fecha de Préstamo</label>
+                <input type="text" class="form-control" id="fechaPrestamo" [value]="fechaActual | date: 'yyyy-MM-dd'" readonly>
+              </div>
+            </div>
         
           <!-- Botones de acción -->
           <div class="modal-footer">

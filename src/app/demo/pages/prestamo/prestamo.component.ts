@@ -1,11 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { PrestamoService } from './service/prestamo.service';
 import { Prestamo } from 'src/app/models/prestamo';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
-import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
-import { DatePipe } from '@angular/common';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  FormsModule,
+  ReactiveFormsModule
+} from '@angular/forms';
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
 import { Usuario } from 'src/app/models/usuario';
 import { Libro } from 'src/app/models/libro';
@@ -21,19 +28,17 @@ declare const bootstrap: any;
   providers: [DatePipe]
 })
 export class PrestamoComponent {
-  modoEdicion: boolean = false;
+  modoEdicion = false;
   prestamos: Prestamo[] = [];
   usuarios: Usuario[] = [];
   libros: Libro[] = [];
-
   modalInstance: any;
-  modoFormulario: string = '';
-  titleModal: string = '';
-  msjSpinner: string = 'Cargando';
-
+  modoFormulario = '';
+  titleModal = '';
+  msjSpinner = 'Cargando';
   prestamoSelected: Prestamo;
-
   form: FormGroup;
+  fechaActual = new Date()
 
   constructor(
     private prestamoService: PrestamoService,
@@ -46,26 +51,15 @@ export class PrestamoComponent {
     this.cargarListaPrestamos();
     this.cargarFormulario();
   }
-
-  cargarFormulario() {
-    this.form = this.formBuilder.group({
-      idUsuario: ['', [Validators.required]],
-      idLibro: ['', [Validators.required]],
-      fechaPrestamo: ['', [Validators.required]],
-      fechaDevolucion: ['', [Validators.required]],
-      estado: [''],
-      fechaEntrega: ['']
-      
-    });
-  
-    if (this.modoFormulario === 'E') {
-      this.form.addControl('estado', new FormControl('', [Validators.required]));
-      this.form.addControl('fechaEntrega', new FormControl(''));
-    }
-    
-
-    // Agregamos el campo estado solo en modo edición más adelante si se requiere
-  }
+// En el método cargarFormulario()
+cargarFormulario() {
+  this.form = this.formBuilder.group({
+    idUsuario: ['', Validators.required],
+    idLibro: ['', Validators.required],
+    fechaDevolucion: ['', Validators.required],
+    fechaEntrega: ['']
+  });
+}
 
   get f(): { [key: string]: AbstractControl } {
     return this.form.controls;
@@ -77,10 +71,10 @@ export class PrestamoComponent {
       next: (data) => {
         this.prestamos = data;
         this.prestamos.forEach((prestamo) => {
-          const usuarioEncontrado = this.usuarios.find(u => u.idUsuario === prestamo.idUsuario);
-          const libroEncontrado = this.libros.find(l => l.idLibro === prestamo.idLibro);
-          prestamo['usuarioNombre'] = usuarioEncontrado ? usuarioEncontrado.nombre : 'N/A';
-          prestamo['libroTitulo'] = libroEncontrado ? libroEncontrado.titulo : 'N/A';
+          const usuario = this.usuarios.find(u => u.idUsuario === prestamo.idUsuario);
+          const libro = this.libros.find(l => l.idLibro === prestamo.idLibro);
+          prestamo['usuarioNombre'] = usuario?.nombre || 'N/A';
+          prestamo['libroTitulo'] = libro?.titulo || 'N/A';
         });
         this.spinner.hide();
       },
@@ -93,41 +87,29 @@ export class PrestamoComponent {
 
   cargarUsuarios() {
     this.prestamoService.getUsuarios().subscribe({
-      next: (data) => {
-        this.usuarios = data;
-      },
-      error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
-      }
+      next: (data) => this.usuarios = data,
+      error: (error) => this.showMessage('Error', error.error.message, 'error')
     });
   }
 
   cargarLibros() {
     this.prestamoService.getLibros().subscribe({
-      next: (data) => {
-        this.libros = data;
-      },
-      error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
-      }
+      next: (data) => this.libros = data,
+      error: (error) => this.showMessage('Error', error.error.message, 'error')
     });
   }
 
   crearPrestamoModal(modoForm: string) {
     this.modoFormulario = modoForm;
-    this.titleModal = modoForm === 'C' ? 'Crear Prestamo' : 'Editar Prestamo';
-
+    this.titleModal = modoForm === 'C' ? 'Crear Préstamo' : 'Editar Préstamo';
     this.form.reset();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
 
     if (modoForm === 'E') {
-      this.form.addControl('estado', new FormControl('', [Validators.required]));
+      this.form.addControl('estado', new FormControl('', Validators.required));
       this.form.get('idUsuario')?.disable();
       this.form.get('idLibro')?.disable();
-      this.form.get('fechaPrestamo')?.disable();
+
       this.form.get('fechaDevolucion')?.disable();
-      this.form.get('estado')?.disable();
     } else {
       if (this.form.contains('estado')) {
         this.form.removeControl('estado');
@@ -147,18 +129,13 @@ export class PrestamoComponent {
 
   cerrarModal() {
     this.form.reset();
-    this.form.markAsPristine();
-    this.form.markAsUntouched();
-
     if (this.form.contains('estado')) {
       this.form.removeControl('estado');
     }
-
     if (this.modalInstance) {
       this.modalInstance.hide();
       this.modalInstance = null;
     }
-
     this.prestamoSelected = null;
   }
 
@@ -180,42 +157,42 @@ export class PrestamoComponent {
   guardarActualizarPrestamo() {
     if (this.form.valid) {
       const rawValue = this.form.getRawValue();
+      const fechaHoy = new Date().toISOString().split('T')[0];
+
+      if (rawValue.fechaEntrega && rawValue.fechaEntrega < rawValue.fechaPrestamo) {
+        this.showMessage('Advertencia', 'La fecha de entrega no puede ser anterior a la fecha de préstamo.', 'warning');
+        return;
+      }
 
       if (this.modoFormulario.includes('C')) {
         const nuevoPrestamo = {
           idUsuario: rawValue.idUsuario,
           idLibro: rawValue.idLibro,
-          fechaPrestamo: this.datePipe.transform(rawValue.fechaPrestamo, 'yyyy-MM-dd'),
-          fechaDevolucion: this.datePipe.transform(rawValue.fechaDevolucion, 'yyyy-MM-dd'),
-          fechaEntrega: this.datePipe.transform(rawValue.fechaEntrega, 'yyyy-MM-dd')
+          fechaPrestamo: new Date().toISOString().split('T')[0], // Fecha actual
+          fechaDevolucion: rawValue.fechaDevolucion
         };
-
+        
         this.prestamoService.guardarPrestamo(nuevoPrestamo).subscribe({
           next: (data) => {
             this.showMessage('Éxito', data.message, 'success');
             this.cargarListaPrestamos();
             this.cerrarModal();
           },
-          error: (error) => {
-            this.showMessage('Error', error.error.message, 'error');
-          }
+          error: (error) => this.showMessage('Error', error.error.message, 'error')
         });
       } else {
         const updatedPrestamo = {
           ...this.prestamoSelected,
           estado: rawValue.estado,
-          fechaEntrega: this.datePipe.transform(rawValue.fechaEntrega, 'yyyy-MM-dd')
+          fechaEntrega: rawValue.fechaEntrega
         };
-
         this.prestamoService.actualizarPrestamo(updatedPrestamo).subscribe({
           next: (data) => {
             this.showMessage('Éxito', data.message, 'success');
             this.cargarListaPrestamos();
             this.cerrarModal();
           },
-          error: (error) => {
-            this.showMessage('Error', error.error.message, 'error');
-          }
+          error: (error) => this.showMessage('Error', error.error.message, 'error')
         });
       }
     }
@@ -223,9 +200,9 @@ export class PrestamoComponent {
 
   public showMessage(title: string, text: string, icon: SweetAlertIcon) {
     Swal.fire({
-      title: title,
-      text: text,
-      icon: icon,
+      title,
+      text,
+      icon,
       confirmButtonText: 'Aceptar',
       customClass: {
         container: 'position-fixed',
