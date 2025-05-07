@@ -55,5 +55,4 @@ export const NavigationItems: NavigationItem[] = [
       }
     ]
   },
-  /* ---------- Nuevos menus aqui -------------  */
 ];

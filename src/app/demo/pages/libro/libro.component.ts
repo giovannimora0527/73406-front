@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Libro } from 'src/app/models/libro';
 import { LibroService } from './service/libro.service';
+<<<<<<< HEAD
 
 import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { Autor } from 'src/app/models/autor';
@@ -12,6 +13,14 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 import { FormGroupDirective } from '@angular/forms'; 
 declare const bootstrap: any;
 import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+=======
+import { NgxSpinnerModule, NgxSpinnerService } from 'ngx-spinner';
+import { FormBuilder, FormControl, FormGroup, Validators, FormsModule, ReactiveFormsModule, AbstractControl } from '@angular/forms';
+import { Autor } from 'src/app/models/autor';
+import { AutorService } from '../autor/service/autor.service';
+
+declare const bootstrap: any;
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8
 
 @Component({
   selector: 'app-libro',
@@ -35,7 +44,11 @@ export class LibroComponent {
     titulo: new FormControl(''),
     autorId: new FormControl(''),
     anioPublicacion: new FormControl(''),
+<<<<<<< HEAD
     CategoriaId: new FormControl(''),
+=======
+    categoriaId: new FormControl(''),
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8
     existencias: new FormControl('')
   });
 
@@ -51,7 +64,11 @@ export class LibroComponent {
   }
 
   getAutores() {
+<<<<<<< HEAD
     this.autorService.getAutor().subscribe(
+=======
+    this.autorService.getAutores().subscribe(
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8
       {
         next: (data) => {         
           this.autores = data;
@@ -68,7 +85,11 @@ export class LibroComponent {
       titulo: ['', [Validators.required]],
       autorId: ['', [Validators.required]],
       anioPublicacion: ['', [Validators.required]],
+<<<<<<< HEAD
       CategoriaId: [true, [Validators.required]],
+=======
+      categoriaId: [true, [Validators.required]],
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8
       existencias: [true, [Validators.required]],
     });
   }
@@ -105,6 +126,7 @@ export class LibroComponent {
 
   abrirModoEdicion(libro: Libro) {
     this.crearModal('E');
+<<<<<<< HEAD
     this.libroSelected = libro;
     this.form.patchValue({
       titulo: this.libroSelected.titulo,
@@ -113,6 +135,9 @@ export class LibroComponent {
       Categoriaid: this.libroSelected.categoria,
       existencias: this.libroSelected.existencias
     });
+=======
+    this.libroSelected = libro; 
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8
   }
 
   cerrarModal() {
@@ -131,6 +156,7 @@ export class LibroComponent {
     }
     this.libroSelected = null;
   }
+<<<<<<< HEAD
   guardarActualizar() {
     if (this.form.valid) {
       if (this.modoFormulario === 'C') {
@@ -188,3 +214,10 @@ export class LibroComponent {
     });
   }
 }
+=======
+
+  guardarActualizar() {
+    console.log("Entro a guardar o actualizar");
+  }
+}
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8

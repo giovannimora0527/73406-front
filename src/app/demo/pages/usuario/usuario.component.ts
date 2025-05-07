@@ -97,6 +97,88 @@ export class UsuarioComponent {
       this.modalInstance.hide();
     }
     this.usuarioSelected = null;
+<<<<<<< HEAD
+  }
+
+  abrirModoEdicion(usuario: Usuario) {
+    this.crearUsuarioModal('E');
+    this.usuarioSelected = usuario;
+    this.form.patchValue({
+      nombre: this.usuarioSelected.nombre,
+      correo: this.usuarioSelected.correo,
+      telefono: this.usuarioSelected.telefono,
+      activo: !!this.usuarioSelected.activo  // asegura que sea booleano
+    });
+  }
+
+  guardarActualizarUsuario() {   
+    console.log(this.form.valid);
+    if (this.modoFormulario === 'C') {
+      this.form.get('activo').setValue(true);
+    }
+    if (this.form.valid) {
+      console.log('El formualario es valido');
+      if (this.modoFormulario.includes('C')) {
+        console.log('Creamos un usuario nuevo');
+        this.usuarioService.guardarUsuario(this.form.getRawValue())
+        .subscribe({
+          next: (data) => {
+            console.log(data);
+            this.showMessage("Éxito", data.message, "success");
+              this.cargarListaUsuarios();
+              this.cerrarModal(); 
+          },
+          error: (error) => {
+            console.log(error);
+            this.showMessage("Error", error.error.message, "error");
+          }
+        });
+      } else {
+        console.log('Actualizamos un usuario existente');
+        // Actualizar solo los campos específicos
+        const idUsuario = this.usuarioSelected.idUsuario;
+        this.usuarioSelected = {
+          ...this.usuarioSelected, // Mantener los valores anteriores
+          ...this.form.getRawValue() // Sobrescribir con los valores del formulario
+        };
+        this.usuarioSelected.idUsuario = idUsuario;       
+        console.log(this.usuarioSelected);    
+        this.usuarioService.actualizarUsuario(this.usuarioSelected)
+        .subscribe({
+          next: (data) => {
+            console.log(data);
+            this.showMessage("Éxito", data.message, "success");
+              this.cargarListaUsuarios();
+              this.cerrarModal();             
+          },
+          error: (error) => {
+            console.log(error);
+            this.showMessage("Error", error.error.message, "error");
+          }
+        });
+      }
+    }
+  }
+
+  public showMessage(title: string, text: string, icon: SweetAlertIcon) {
+    Swal.fire({
+      title: title,
+      text: text,
+      icon: icon,
+      confirmButtonText: 'Aceptar',      
+      customClass: {
+        container: 'position-fixed',
+        popup: 'swal-overlay'
+      },
+      didOpen: () => {
+        const swalPopup = document.querySelector('.swal2-popup');
+        if (swalPopup) {
+          (swalPopup as HTMLElement).style.zIndex = '1060';
+        }
+      }
+    });
+=======
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8
   }
 
   abrirModoEdicion(usuario: Usuario) {

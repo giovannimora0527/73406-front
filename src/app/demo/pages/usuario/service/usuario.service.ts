@@ -21,6 +21,17 @@ export class UsuarioService {
 
   getUsuarios(): Observable<Usuario[]> {
     return this.backendService.get(environment.apiUrl, this.api, "listar");
+<<<<<<< HEAD
+  }
+
+  guardarUsuario(usuario: Usuario): Observable<UsuarioRs> {
+    return this.backendService.post(environment.apiUrl, this.api, "guardar-usuario", usuario);
+  }
+
+  actualizarUsuario(usuario: Usuario): Observable<UsuarioRs> {
+    return this.backendService.post(environment.apiUrl, this.api, "actualizar-usuario", usuario);
+=======
+>>>>>>> 9489ceba2a824d071832fa6b6fae69dcc63feca8
   }
 
   guardarUsuario(usuario: Usuario): Observable<UsuarioRs> {
