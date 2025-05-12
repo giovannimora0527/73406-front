@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class BackendService {
-  constructor(private readonly http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
   construirHeader() {
     // Aqui obtenemos el token desde el local storage

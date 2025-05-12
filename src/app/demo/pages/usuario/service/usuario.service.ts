@@ -23,11 +23,12 @@ export class UsuarioService {
     return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
 
-  guardarUsuario(usuario: Usuario): Observable<UsuarioRs> {
+  guardarUsuarioNuevo(usuario: Usuario) : Observable<UsuarioRs>  {    
     return this.backendService.post(environment.apiUrl, this.api, "guardar-usuario", usuario);
   }
 
-  actualizarUsuario(usuario: Usuario): Observable<UsuarioRs> {
+  actualizarUsuario(usuario: Usuario): Observable<UsuarioRs>  {    
     return this.backendService.post(environment.apiUrl, this.api, "actualizar-usuario", usuario);
   }
+
 }
