@@ -86,6 +86,7 @@ export class LibroComponent {
   }
 
   crearModal(modoForm: string) {
+    this.getLibros();
     this.modoFormulario = modoForm;
     this.titleModal = modoForm == 'C' ? 'Crear Libro' : 'Editar Libro';
     const modalElement = document.getElementById('crearModal');
