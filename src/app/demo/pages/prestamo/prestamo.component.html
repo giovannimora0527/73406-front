@@ -70,7 +70,11 @@
                         </ng-template>
                       </td>
                       <td class="text-center">
-                        <button class="btn btn-outline-primary btn-sm" title="Editar préstamo" (click)="abrirModoEdicion(prestamo)">
+                        <button 
+                          class="btn btn-outline-primary btn-sm" 
+                          title="Editar préstamo" 
+                          (click)="abrirModoEdicion(prestamo)"
+                          [disabled]="prestamo.estado === 'DEVUELTO'">
                           <i class="fa fa-edit"></i>
                         </button>
                       </td>
@@ -103,6 +107,7 @@
         <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
+        <!-- FORMULARIO SIN los botones dentro -->
         <form [formGroup]="form" (ngSubmit)="guardarActualizarPrestamo()">
           <div class="row">
             <!-- Selección de Usuario -->
@@ -127,7 +132,9 @@
                 <select id="idLibro" class="form-select" formControlName="idLibro"
                   [ngClass]="{ 'is-invalid': f['idLibro'].invalid && (f['idLibro'].touched || f['idLibro'].dirty) }">
                   <option value="">Seleccione un libro</option>
-                  <option *ngFor="let libro of librosDisponibles" [value]="libro.idLibro">{{ libro.titulo }}</option>
+                  <option *ngFor="let libro of librosDisponibles" [value]="libro.idLibro">
+                    {{ libro.titulo }} ({{ libro.existencias }} disponibles)
+                  </option>
                 </select>
                 <div *ngIf="f['idLibro'].invalid && (f['idLibro'].touched || f['idLibro'].dirty)" class="invalid-feedback">
                   El libro es obligatorio.
@@ -162,13 +169,12 @@
               </div>
             </div>
           </div>
-
-          <!-- Botones de acción -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-            <button type="submit" class="btn btn-primary" [disabled]="!form.valid">Crear</button>
-          </div>
         </form>
+      </div>
+      <!-- BOTONES FUERA del formulario -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarActualizarPrestamo()" [disabled]="!form.valid">Crear</button>
       </div>
     </div>
   </div>
@@ -191,23 +197,28 @@
         <button type="button" class="btn-close" (click)="cerrarModal()" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
+
+        <!-- FORMULARIO SIN los botones dentro -->
         <form [formGroup]="formEdicion" (ngSubmit)="guardarActualizarPrestamo()">
           <!-- Fecha de entrega (único campo) -->
           <div class="mb-3">
             <label for="fechaEntrega" class="form-label">Fecha de entrega</label>
-            <input type="date" class="form-control" id="fechaEntrega" formControlName="fechaEntrega" />
+            <input type="date" class="form-control" id="fechaEntrega" formControlName="fechaEntrega" 
+              [ngClass]="{ 'is-invalid': formEdicion.get('fechaEntrega')?.invalid && formEdicion.get('fechaEntrega')?.touched }" />
+            <div *ngIf="formEdicion.get('fechaEntrega')?.invalid && formEdicion.get('fechaEntrega')?.touched" class="invalid-feedback">
+              La fecha de entrega es obligatoria.
+            </div>
             <small class="form-text text-muted">
-              Al registrar la fecha de entrega, el préstamo se marcará como DEVUELTO.
-              Si la fecha es posterior a la fecha de devolución, se marcará como VENCIDO.
+              Al registrar la fecha de entrega, el préstamo se marcará como <strong>DEVUELTO</strong>.
             </small>
           </div>
-
-          <!-- Botones de acción -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Registrar Entrega</button>
-          </div>
         </form>
+      </div>
+      <!-- BOTONES FUERA del formulario -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+        <button type="button" class="btn btn-primary" (click)="guardarActualizarPrestamo()" 
+          [disabled]="!formEdicion.valid">Registrar Entrega</button>
       </div>
     </div>
   </div>

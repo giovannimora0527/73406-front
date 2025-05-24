@@ -6,6 +6,9 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class BackendService {
+  postFormData(apiUrl: string, api: string, arg2: string, formData: FormData, arg4: string): Observable<string> {
+    throw new Error('Method not implemented.');
+  }
   constructor(private http: HttpClient) { }
 
   construirHeader() {
@@ -63,7 +66,7 @@ export class BackendService {
       withCredentials: true,
     });
   }
-
+  
   put<T>(
     urlApi: string,
     endpoint: string,

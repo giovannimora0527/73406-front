@@ -33,4 +33,9 @@ export class AutorService {
   actualizarAutor(autor: Autor): Observable<AutorRs> {
     return this.backendService.post(environment.apiUrl, this.api, "actualizar-autor", autor);
   }
+  cargarAutoresCSV(archivo: File): Observable<any> {
+  const formData = new FormData();
+  formData.append('archivo', archivo);
+  return this.backendService.postFile(environment.apiUrl, this.api, "cargar-csv", formData);
+}
 }

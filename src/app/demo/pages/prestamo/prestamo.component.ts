@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PrestamoService } from './service/prestamo.service';
 import { Prestamo } from 'src/app/models/prestamo';
@@ -20,7 +20,7 @@ declare const bootstrap: any;
   styleUrls: ['./prestamo.component.scss'],
   providers: [DatePipe]
 })
-export class PrestamoComponent implements OnInit {
+export class PrestamoComponent implements OnInit, OnDestroy {
   modoEdicion: boolean = false;
   prestamos: Prestamo[] = [];
   usuarios: Usuario[] = [];
@@ -47,12 +47,14 @@ export class PrestamoComponent implements OnInit {
    * @param formBuilder Constructor de formularios reactivos
    * @param datePipe Pipe para formatear fechas
    * @param spinner Servicio para mostrar spinner de carga
+   * @param cdr ChangeDetectorRef para forzar detección de cambios
    */
   constructor(
     private prestamoService: PrestamoService,
     private formBuilder: FormBuilder,
     private datePipe: DatePipe,
-    private spinner: NgxSpinnerService
+    private spinner: NgxSpinnerService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   /**
@@ -63,6 +65,35 @@ export class PrestamoComponent implements OnInit {
     this.cargarLibrosDisponibles();  
     this.cargarListaPrestamos(); 
     this.inicializarFormularios();
+  }
+
+  /**
+   * Método que se ejecuta al destruir el componente
+   */
+  ngOnDestroy(): void {
+    // Limpiar modales si existen
+    if (this.modalCreacionInstance) {
+      try {
+        this.modalCreacionInstance.dispose();
+      } catch (e) {
+        console.warn('Error al limpiar modal de creación en ngOnDestroy:', e);
+      }
+      this.modalCreacionInstance = null;
+    }
+    
+    if (this.modalEdicionInstance) {
+      try {
+        this.modalEdicionInstance.dispose();
+      } catch (e) {
+        console.warn('Error al limpiar modal de edición en ngOnDestroy:', e);
+      }
+      this.modalEdicionInstance = null;
+    }
+
+    //Restaurar scroll del body
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    document.body.classList.remove('modal-open');
   }
 
   /**
@@ -131,7 +162,7 @@ export class PrestamoComponent implements OnInit {
         this.spinner.hide();
       },
       error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
+        this.showMessage('Error', error.error?.message || 'Error al cargar préstamos', 'error');
         this.spinner.hide();
       }
     });
@@ -146,7 +177,7 @@ export class PrestamoComponent implements OnInit {
         this.usuarios = data;
       },
       error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
+        this.showMessage('Error', error.error?.message || 'Error al cargar usuarios', 'error');
       }
     });
   }
@@ -160,7 +191,7 @@ export class PrestamoComponent implements OnInit {
         this.librosDisponibles = data;
       },
       error: (error) => {
-        this.showMessage('Error', error.error.message, 'error');
+        this.showMessage('Error', error.error?.message || 'Error al cargar libros', 'error');
       }
     });
   }
@@ -169,35 +200,81 @@ export class PrestamoComponent implements OnInit {
    * Inicializa el modal para crear un préstamo
    */
   crearPrestamoModal(modoForm: string) {
+    // PREVENIR CLICS MÚLTIPLES: Deshabilitar temporalmente
+    const button = event?.target as HTMLElement;
+    if (button) {
+      button.style.pointerEvents = 'none';
+      setTimeout(() => {
+        button.style.pointerEvents = 'auto';
+      }, 1000);
+    }
+
+    
     this.modoFormulario = modoForm;
     this.modoEdicion = modoForm === 'E';
     this.titleModal = modoForm === 'C' ? 'Crear Préstamo' : 'Editar Préstamo';
 
-    // Resetear formularios
-    this.form.reset();
-    this.formEdicion.reset();
-    
-    // Si es creación, establecer fecha actual
+    // Forzar detección de cambios
+    this.cdr.detectChanges();
+
     if (modoForm === 'C') {
-      this.form.get('fechaPrestamo').setValue(this.obtenerFechaActual());
+      // Preparar formulario de creación
+      this.form.reset();
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
+      this.form.get('fechaPrestamo')?.setValue(this.obtenerFechaActual());
       
-      // Mostrar modal de creación
-      const modalElement = document.getElementById('crearPrestamoModal');
-      if (modalElement) {
-        if (!this.modalCreacionInstance) {
-          this.modalCreacionInstance = new bootstrap.Modal(modalElement);
+      // Usar setTimeout para asegurar que Angular detecte el cambio
+      setTimeout(() => {
+        const modalElement = document.getElementById('crearPrestamoModal');
+        if (modalElement && this.modoFormulario === 'C') { // Verificar que el modo siga siendo correcto
+          // Limpiar instancia anterior
+          if (this.modalCreacionInstance) {
+            try {
+              this.modalCreacionInstance.dispose();
+            } catch (e) {
+              console.warn('Error al dispose del modal:', e);
+            }
+            this.modalCreacionInstance = null;
+          }
+          
+          // Crear nueva instancia y mostrar
+          this.modalCreacionInstance = new bootstrap.Modal(modalElement, {
+            backdrop: 'static',
+            keyboard: false
+          });
+          this.modalCreacionInstance.show();
         }
-        this.modalCreacionInstance.show();
-      }
+      }, 100); // Aumenté el delay a 100ms
+      
     } else if (modoForm === 'E') {
-      // Mostrar modal de edición
-      const modalElement = document.getElementById('editarPrestamoModal');
-      if (modalElement) {
-        if (!this.modalEdicionInstance) {
-          this.modalEdicionInstance = new bootstrap.Modal(modalElement);
+      // Preparar formulario de edición
+      this.formEdicion.reset();
+      this.formEdicion.markAsPristine();
+      this.formEdicion.markAsUntouched();
+      
+      // Usar setTimeout para modal de edición también
+      setTimeout(() => {
+        const modalElement = document.getElementById('editarPrestamoModal');
+        if (modalElement && this.modoFormulario === 'E') { // Verificar que el modo siga siendo correcto
+          // Limpiar instancia anterior
+          if (this.modalEdicionInstance) {
+            try {
+              this.modalEdicionInstance.dispose();
+            } catch (e) {
+              console.warn('Error al dispose del modal:', e);
+            }
+            this.modalEdicionInstance = null;
+          }
+          
+          // Crear nueva instancia y mostrar
+          this.modalEdicionInstance = new bootstrap.Modal(modalElement, {
+            backdrop: 'static',
+            keyboard: false
+          });
+          this.modalEdicionInstance.show();
         }
-        this.modalEdicionInstance.show();
-      }
+      }, 100);
     }
   }
 
@@ -205,24 +282,97 @@ export class PrestamoComponent implements OnInit {
    * Cierra los modales y limpia los formularios
    */
   cerrarModal() {
-    // Cerrar el modal de creación si está abierto
-    if (this.modalCreacionInstance) {
-      this.modalCreacionInstance.hide();
-    }
-    
-    // Cerrar el modal de edición si está abierto
-    if (this.modalEdicionInstance) {
-      this.modalEdicionInstance.hide();
-    }
-    
-    // Resetear formularios
-    this.form.reset();
-    this.formEdicion.reset();
-    
-    // Limpiar préstamo seleccionado y modo de edición
-    this.prestamoSelected = null;
-    this.modoEdicion = false;
+    // Limpiar el modo INMEDIATAMENTE
     this.modoFormulario = '';
+    this.modoEdicion = false;
+    this.prestamoSelected = null;
+
+    // Restaurar scroll antes de cerrar modales
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+    document.body.classList.remove('modal-open');
+
+    // Cerrar modales de forma más robusta
+    if (this.modalCreacionInstance) {
+      try {
+        this.modalCreacionInstance.hide();
+        // Limpiar inmediatamente después de ocultar
+        setTimeout(() => {
+          if (this.modalCreacionInstance) {
+            this.modalCreacionInstance.dispose();
+            this.modalCreacionInstance = null;
+          }
+        
+          document.body.style.overflow = '';
+          document.body.style.paddingRight = '';
+          document.body.classList.remove('modal-open');
+        }, 150);
+      } catch (e) {
+        console.warn('Error al cerrar modal de creación:', e);
+        this.modalCreacionInstance = null;
+        // Restaurar scroll en caso de error
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        document.body.classList.remove('modal-open');
+      }
+    }
+    
+    if (this.modalEdicionInstance) {
+      try {
+        this.modalEdicionInstance.hide();
+        // Limpiar inmediatamente después de ocultar
+        setTimeout(() => {
+          if (this.modalEdicionInstance) {
+            this.modalEdicionInstance.dispose();
+            this.modalEdicionInstance = null;
+          }
+          
+          document.body.style.overflow = '';
+          document.body.style.paddingRight = '';
+          document.body.classList.remove('modal-open');
+        }, 150);
+      } catch (e) {
+        console.warn('Error al cerrar modal de edición:', e);
+        this.modalEdicionInstance = null;
+        // Restaurar scroll en caso de error
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+        document.body.classList.remove('modal-open');
+      }
+    }
+    
+    // Reset de formularios mejorado
+    if (this.form) {
+      this.form.reset();
+      this.form.markAsPristine();
+      this.form.markAsUntouched();
+      Object.keys(this.form.controls).forEach(key => {
+        this.form.get(key)?.setErrors(null);
+      });
+    }
+    
+    if (this.formEdicion) {
+      this.formEdicion.reset();
+      this.formEdicion.markAsPristine();
+      this.formEdicion.markAsUntouched();
+      Object.keys(this.formEdicion.controls).forEach(key => {
+        this.formEdicion.get(key)?.setErrors(null);
+      });
+    }
+
+    // Asegurar scroll después de todo
+    setTimeout(() => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      document.body.classList.remove('modal-open');
+      // Verificar si quedan otros modales abiertos
+      const openModals = document.querySelectorAll('.modal.show');
+      if (openModals.length === 0) {
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }
+    }, 300);
   }
   
   /**
@@ -230,12 +380,18 @@ export class PrestamoComponent implements OnInit {
    * Solo muestra el campo de fecha de entrega según los requisitos
    */
   abrirModoEdicion(prestamo: Prestamo) {
+    // Validar que el préstamo no esté ya devuelto
+    if (prestamo.estado === 'DEVUELTO') {
+      this.showMessage('Información', 'Este préstamo ya fue devuelto y no se puede modificar.', 'info');
+      return;
+    }
+
     this.prestamoSelected = prestamo;
     this.crearPrestamoModal('E');
     
     // Si hay una fecha de entrega existente, establecerla en el formulario
     if (prestamo.fechaEntrega) {
-      this.formEdicion.get('fechaEntrega').setValue(
+      this.formEdicion.get('fechaEntrega')?.setValue(
         this.datePipe.transform(prestamo.fechaEntrega, 'yyyy-MM-dd')
       );
     }
@@ -248,10 +404,10 @@ export class PrestamoComponent implements OnInit {
     if (this.modoFormulario === 'C' && this.form.valid) {
       // Crear nuevo préstamo
       const nuevoPrestamo = {
-        idUsuario: this.form.get('idUsuario').value,
-        idLibro: this.form.get('idLibro').value,
-        fechaPrestamo: this.form.get('fechaPrestamo').value,
-        fechaDevolucion: this.form.get('fechaDevolucion').value
+        idUsuario: parseInt(this.form.get('idUsuario')?.value),
+        idLibro: parseInt(this.form.get('idLibro')?.value),
+        fechaPrestamo: this.form.get('fechaPrestamo')?.value,
+        fechaDevolucion: this.form.get('fechaDevolucion')?.value
       };
       
       this.spinner.show();
@@ -264,13 +420,13 @@ export class PrestamoComponent implements OnInit {
           this.spinner.hide();
         },
         error: (error) => {
-          this.showMessage('Error', error.error.message || 'Error al crear el préstamo', 'error');
+          this.showMessage('Error', error.error?.message || 'Error al crear el préstamo', 'error');
           this.spinner.hide();
         }
       });
     } else if (this.modoFormulario === 'E' && this.formEdicion.valid && this.prestamoSelected) {
       // Actualizar préstamo (solo fecha de entrega)
-      const fechaEntrega = this.formEdicion.get('fechaEntrega').value;
+      const fechaEntrega = this.formEdicion.get('fechaEntrega')?.value;
       
       const prestamoActualizado = {
         idPrestamo: this.prestamoSelected.idPrestamo,
@@ -287,7 +443,7 @@ export class PrestamoComponent implements OnInit {
           this.spinner.hide();
         },
         error: (error) => {
-          this.showMessage('Error', error.error.message || 'Error al actualizar el préstamo', 'error');
+          this.showMessage('Error', error.error?.message || 'Error al actualizar el préstamo', 'error');
           this.spinner.hide();
         }
       });
@@ -295,11 +451,11 @@ export class PrestamoComponent implements OnInit {
       // Marcar campos como tocados para mostrar errores
       if (this.modoFormulario === 'C') {
         Object.keys(this.form.controls).forEach(key => {
-          this.form.get(key).markAsTouched();
+          this.form.get(key)?.markAsTouched();
         });
       } else {
         Object.keys(this.formEdicion.controls).forEach(key => {
-          this.formEdicion.get(key).markAsTouched();
+          this.formEdicion.get(key)?.markAsTouched();
         });
       }
       

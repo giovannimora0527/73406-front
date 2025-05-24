@@ -8,7 +8,6 @@
   <p style="color: white;">{{ msjSpinner }}</p>
 </ngx-spinner>
 
-
 <div class="container">
   <div class="card">
     <div class="card-header">
@@ -17,6 +16,11 @@
           <button class="btn btn-outline-primary btn-sm" (click)="crearUsuarioModal('C')" title="Crear un usuario nuevo">
             <i class="fa fa-plus"></i>
             &nbsp;Nuevo
+          </button>
+          <!-- Botón para cargar CSV -->
+          <button class="btn btn-outline-success btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#cargarCsvModal" title="Cargar usuarios desde CSV" (click)="resetearProcesoCarga()">
+            <i class="fa fa-upload"></i>
+            &nbsp;Cargar CSV
           </button>
         </div>
       </div>
@@ -77,6 +81,7 @@
   </div>
 </div>
 
+<!-- Modal para crear/editar usuario -->
 <div
   class="modal fade"
   id="crearUsuarioModal"
@@ -142,6 +147,148 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
         <button type="button" class="btn btn-primary" (click)="guardarActualizarUsuario()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para carga de CSV -->
+<div
+  class="modal fade"
+  id="cargarCsvModal"
+  tabindex="-1"
+  aria-labelledby="cargarCsvModalLabel"
+  data-bs-backdrop="static"
+  data-bs-keyboard="false"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cargarCsvModalLabel">Importar Usuarios desde CSV</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="resetearProcesoCarga()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Step 1: Selección de archivo -->
+        <div *ngIf="pasoActualCsv === 1">
+          <div class="mb-3">
+            <label for="csvFileInput" class="form-label">Seleccione el archivo CSV</label>
+            <div class="input-group">
+              <input 
+                type="file" 
+                class="form-control" 
+                id="csvFileInput" 
+                accept=".csv" 
+                (change)="onFileSelected($event)"
+              />
+              <button class="btn btn-outline-secondary" type="button" [disabled]="!archivoSeleccionado" (click)="validarCSV()">Validar</button>
+            </div>
+          </div>
+          
+          <div class="alert alert-info">
+            <h6 class="mb-2">Formato esperado del archivo CSV:</h6>
+            <p class="mb-1">- Debe contener tres columnas en este orden: nombre, correo, telefono</p>
+            <p class="mb-1">- El nombre debe contener solo letras</p>
+            <p class="mb-1">- El correo debe tener un formato válido</p>
+            <p class="mb-1">- El teléfono debe contener solo números y tener máximo 15 dígitos</p>
+            <p class="mb-1">- Tanto el nombre como el correo deben ser únicos</p>
+            <hr>
+            <p class="mb-0"><strong>Ejemplo:</strong></p>
+            <pre class="small bg-light p-2">
+              Juan Pérez,juan&#64;ejemplo.com,3001234567
+              María López,maria&#64;example.com,3109876543
+              Carlos Rodríguez,carlos&#64;example.com,3203456789
+            </pre>
+          </div>
+        </div>
+
+        <!-- Step 2: Validación y errores -->
+        <div *ngIf="pasoActualCsv === 2">
+          <div *ngIf="erroresValidacion.length > 0" class="alert alert-danger">
+            <h6>Errores encontrados:</h6>
+            <ul class="mb-0 ps-3">
+              <li *ngFor="let error of erroresValidacion">{{ error }}</li>
+            </ul>
+            <div class="mt-3 small">
+              Debe corregir todos los errores para poder realizar la carga de usuarios.
+            </div>
+          </div>
+          
+          <div *ngIf="erroresValidacion.length === 0" class="alert alert-success">
+            <h6>Archivo válido</h6>
+            <p class="mb-0">El archivo está listo para ser procesado. Haga clic en "Cargar Usuarios" para continuar.</p>
+          </div>
+        </div>
+
+        <!-- Step 3: Procesamiento y Resultado -->
+        <div *ngIf="pasoActualCsv === 3">
+          <div *ngIf="procesandoCsv" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Procesando...</span>
+            </div>
+            <p class="mt-2">Procesando archivo, por favor espere...</p>
+          </div>
+
+          <div *ngIf="!procesandoCsv && resultadoCarga" class="alert" 
+               [ngClass]="{'alert-success': resultadoCarga.exitosos > 0 && resultadoCarga.fallidos === 0, 
+                          'alert-warning': resultadoCarga.exitosos > 0 && resultadoCarga.fallidos > 0,
+                          'alert-danger': resultadoCarga.exitosos === 0}">
+            <h6>Resultado de la importación</h6>
+            <div class="row mt-3">
+              <div class="col-md-4 text-center">
+                <div class="fs-2">{{ resultadoCarga.totalProcesados }}</div>
+                <div>Total registros</div>
+              </div>
+              <div class="col-md-4 text-center">
+                <div class="fs-2 text-success">{{ resultadoCarga.exitosos }}</div>
+                <div>Exitosos</div>
+              </div>
+              <div class="col-md-4 text-center">
+                <div class="fs-2" [ngClass]="{'text-danger': resultadoCarga.fallidos > 0, 'text-success': resultadoCarga.fallidos === 0}">
+                  {{ resultadoCarga.fallidos }}
+                </div>
+                <div>Fallidos</div>
+              </div>
+            </div>
+            
+            <div *ngIf="resultadoCarga.fallidos > 0" class="mt-3">
+              <p class="fw-bold">Algunos registros no pudieron ser importados:</p>
+              <div class="small errores-container">
+                <div *ngFor="let error of resultadoCarga.errores | slice:0:5" class="mb-1">
+                  • {{ error }}
+                </div>
+                <div *ngIf="resultadoCarga.errores && resultadoCarga.errores.length > 5" class="text-muted">
+                  ...y {{ resultadoCarga.errores.length - 5 }} errores más.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <!-- Botones para Step 1: Selección -->
+        <div *ngIf="pasoActualCsv === 1">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetearProcesoCarga()">Cancelar</button>
+          <button type="button" class="btn btn-primary" [disabled]="!archivoSeleccionado" (click)="validarCSV()">
+            Validar Archivo
+          </button>
+        </div>
+        
+        <!-- Botones para Step 2: Validación -->
+        <div *ngIf="pasoActualCsv === 2">
+          <button type="button" class="btn btn-secondary" (click)="pasoActualCsv = 1">Volver</button>
+          <button type="button" class="btn btn-primary" [disabled]="erroresValidacion.length > 0" (click)="cargarCSV()">
+            Cargar Usuarios
+          </button>
+        </div>
+        
+         <!-- Botones para Step 3: Resultado -->
+        <div *ngIf="pasoActualCsv === 3 && !procesandoCsv">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="resetearProcesoCarga()">Cerrar</button>
+          <button type="button" class="btn btn-primary" *ngIf="resultadoCarga?.exitosos > 0" data-bs-dismiss="modal" (click)="resetearProcesoCarga()">
+            Aceptar
+          </button>
+        </div>
       </div>
     </div>
   </div>
