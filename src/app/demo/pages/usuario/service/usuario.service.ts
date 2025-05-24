@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 export class UsuarioService {
   private api = `usuario`;
 
-  constructor(private backendService: BackendService) { 
+  constructor(private backendService: BackendService) {
     this.testService();
   }
 
@@ -29,5 +29,9 @@ export class UsuarioService {
 
   actualizarUsuario(usuario: Usuario): Observable<UsuarioRs> {
     return this.backendService.post(environment.apiUrl, this.api, "actualizar-usuario", usuario);
+  }
+
+  postCargarMasivo(formData: FormData): Observable<any> {
+    return this.backendService.postFile(environment.apiUrl, this.api, "cargar", formData);
   }
 }

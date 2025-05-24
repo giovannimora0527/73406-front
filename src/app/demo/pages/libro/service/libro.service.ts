@@ -10,9 +10,9 @@ import { environment } from 'src/environments/environment';
 export class LibroService {
 
   private readonly api = `libro`;
-  
-  constructor(private readonly backendService: BackendService) { 
-   
+
+  constructor(private readonly backendService: BackendService) {
+
   }
 
   getLibros(): Observable<Libro[]> {
@@ -20,5 +20,9 @@ export class LibroService {
   }
   getLibrosDisponibles(): Observable<Libro[]> {
     return this.backendService.get(environment.apiUrl, this.api, "listar-disponibles");
+  }
+
+  postCargarMasivo(formData: FormData): Observable<any> {
+    return this.backendService.postFile(environment.apiUrl, this.api, "cargar", formData);
   }
 }

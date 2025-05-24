@@ -31,4 +31,9 @@ export class AutorService {
   actualizarAutor(autor: Autor): Observable<AutorRs> {
     return this.backendService.post(environment.apiUrl, this.api, "actualizar-autor", autor);
   }
+  
+    postCargarMasivo(formData: FormData): Observable<any> {
+    return this.backendService.postFile(environment.apiUrl, this.api, "cargar", formData);
+  }
+
 }

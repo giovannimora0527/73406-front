@@ -15,6 +15,9 @@
             <i class="fa fa-plus"></i>
             &nbsp;Nuevo
           </button>
+                  <button class="btn btn-outline-success btn-sm ms-2" (click)="abrirModalCargaMasiva()">
+          <i class="fa fa-file-excel"></i> Carga Masiva
+        </button>
         </div>
       </div>
     </div>
@@ -120,6 +123,48 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
         <button type="button" class="btn btn-primary" (click)="guardarActualizarAutor()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal carga masiva -->
+<div class="modal fade" id="modalCargaMasiva" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Carga Masiva de Autores</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="file" class="form-control" accept=".xls,.xlsx" (change)="handleArchivoExcel($event)" id="fileInput">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" (click)="procesarCargaMasiva()">Subir Archivo</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de respuesta -->
+<div class="modal fade" id="respuestaModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Resultado de carga</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ mensajeRespuesta }}</p>
+
+        <ul *ngIf="erroresCarga.length > 0" class="text-danger">
+          <li *ngFor="let err of erroresCarga">{{ err }}</li>
+
+        </ul>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
       </div>
     </div>
   </div>
