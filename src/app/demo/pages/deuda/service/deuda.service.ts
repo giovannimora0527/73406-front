@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { DeudaRs } from 'src/app/models/deudaRs';
+import { Deuda } from 'src/app/models/deuda';
 import { BackendService } from 'src/app/services/backend.service';
 import { environment } from 'src/environments/environment';
 
@@ -11,11 +11,17 @@ export class DeudaService {
 
   private readonly api = `deuda`;
   
-  constructor(private readonly backendService: BackendService) { 
-   
+  constructor(private readonly backendService: BackendService) {}
+
+  buscarDeudasPorUsuario(nombreUsuario: string): Observable<Deuda[]> {
+    return this.backendService.post(environment.apiUrl, this.api, 'buscarDeudor', {
+      nombreUsuario: nombreUsuario
+    });
   }
 
-  getDeudas(): Observable<DeudaRs> {
-  return this.backendService.get(environment.apiUrl, this.api, 'listar');
+  pagarDeuda(idDeuda: number): Observable<any> {
+    return this.backendService.post(environment.apiUrl, this.api, 'pagarDeuda', {
+      idDeuda: idDeuda
+    });
   }
 }

@@ -32,9 +32,9 @@
             <tr *ngFor="let prestamo of prestamos">
               <td>{{ prestamo.usuario?.nombre }}</td>
               <td>{{ prestamo.libro?.titulo }}</td>
-              <td>{{ prestamo.fechaPrestamo | date: 'dd--MM--yyyy' }}</td>
-              <td>{{ prestamo.fechaDevolucion | date: 'dd--MM--yyyy'}}</td>
-              <td>{{ prestamo.fechaEntrega ? (prestamo.fechaEntrega | date:'dd--MM--yyyy') : 'No devuelto' }}</td>
+              <td>{{ prestamo.fechaPrestamo | date: 'dd-MM-yyyy' }}</td>
+              <td>{{ prestamo.fechaDevolucion | date: 'dd-MM-yyyy'}}</td>
+              <td>{{ prestamo.fechaEntrega ? (prestamo.fechaEntrega | date:'dd-MM-yyyy') : 'No devuelto' }}</td>
               <td [ngClass]="getColorEstado(prestamo)">
                 {{ prestamo.estado }}
               </td>

@@ -1,179 +1,103 @@
-<ngx-spinner
-  bdColor="rgba(51,51,51,0.8)"
-  size="medium"
-  color="#fff"
-  type="ball-scale-multiple"
-  [fullScreen]="true"
->
-  {{ msjSpinner }}...
-</ngx-spinner>
+<div class="container mt-4">
+  <h4 class="text-center mb-4">Gestión de deudas y multas</h4>
 
-<div class="container">
-  <div class="card">
-    <div class="card-header">
-      <div class="row">
-        <div class="col">
-          <button
-            class="btn btn-outline-primary btn-sm"
-            (click)="crearModal('C')"
-            title="Crear una nueva deuda"
+  <div class="input-group mb-3">
+    <input
+      type="text"
+      class="form-control"
+      placeholder="Consultar datos por nombre del usuario"
+      [(ngModel)]="nombreBuscado"
+    />
+    <button class="btn btn-outline-secondary" (click)="buscarPorUsuario()">Buscar</button>
+  </div>
+
+  <table class="table table-hover mt-3" *ngIf="deudas.length > 0">
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Libro</th>
+        <th>Fecha de préstamo</th>
+        <th>Fecha de devolución</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let deuda of deudas">
+        <td>{{ deuda.usuario?.nombre }}</td>
+        <td>{{ deuda.libro?.titulo }}</td>
+        <td>{{ deuda.prestamo?.fechaPrestamo | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td>{{ deuda.prestamo?.fechaDevolucion | date:'yyyy-MM-dd HH:mm:ss' }}</td>
+        <td>
+          <span
+            [ngClass]="{
+              'text-success': deuda.estado?.toLowerCase() === 'pagada',
+              'text-danger': deuda.estado?.toLowerCase() !== 'pagada'
+            }"
           >
-            <i class="fa fa-plus"></i>
-            &nbsp;Nueva deuda
+            {{ deuda.estado }}
+          </span>
+        </td>
+        <td>
+          <button
+            class="btn btn-primary"
+            (click)="pagarDeuda(deuda)"
+            [disabled]="deuda.estado?.toLowerCase() === 'pagada'"
+          >
+            Pagar
           </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  
+  <div class="modal fade" id="modalPago" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Cancelar deuda</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
-      </div>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col">
-          <div class="card">
-            <div class="card-body">
-              <div class="table table-responsive">
-                <table class="table table-responsive table-stripped">
-                  <thead>
-                    <tr>
-                      <th>Usuario</th>
-                      <th>Libro</th>
-                      <th>Préstamo</th>
-                      <th>Monto</th>
-                      <th>Estado</th>
-                      <th class="text-center">Opciones</th>
-                    </tr>
-                  </thead>
-                  <tbody *ngIf="deudas.length === 0">
-                    <tr>
-                      <td colspan="6" class="text-center">
-                        No hay registros disponibles
-                      </td>
-                    </tr>
-                  </tbody>
-                  <tbody *ngIf="deudas.length > 0">
-                    <tr *ngFor="let deuda of deudas">
-                      <td>{{ deuda.usuario?.nombre }}</td>
-                      <td>{{ deuda.libro?.titulo }}</td>
-                      <td>{{ deuda.prestamo?.idPrestamo }}</td>
-                      <td>{{ deuda.monto | currency }}</td>
-                      <td>{{ deuda.estado }}</td>
-                      <td class="text-center">
-                        <button
-                          class="btn btn-outline-primary btn-sm"
-                          title="Editar deuda"
-                          (click)="abrirModoEdicion(deuda)"
-                        >
-                          <i class="fa fa-edit"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+        <div class="modal-body">
+          <p><strong>Valor de la multa:</strong> {{ deudaSeleccionada?.monto | currency:'COP' }}</p>
+
+          <div class="mb-3">
+            <label class="form-label fw-bold">Tipo de pago</label>
+            <div class="form-check" *ngFor="let tipo of tiposPago">
+              <input
+                type="radio"
+                class="form-check-input"
+                name="tipoPago"
+                [value]="tipo"
+                [(ngModel)]="tipoPagoSeleccionado"
+                id="{{ tipo }}"
+              />
+              <label class="form-check-label" [for]="tipo">{{ tipo }}</label>
             </div>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary" (click)="confirmarPago()" [disabled]="!tipoPagoSeleccionado">
+            <ngx-spinner *ngIf="pagando" size="small" type="ball-clip-rotate" color="#fff"></ngx-spinner>
+            {{ pagando ? ' Realizando pago' : 'Pagar' }}
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal para crear o editar deuda -->
-  <div
-    class="modal fade"
-    id="crearModal"
-    tabindex="-1"
-    aria-labelledby="crearModalLabel"
-    data-bs-backdrop="static"
-    data-bs-keyboard="false"
-  >
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+
+  <div class="modal fade" id="modalExito" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content text-center">
         <div class="modal-header">
-          <h5 class="modal-title" id="crearModalLabel">{{ titleModal }}</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <h5 class="modal-title">Éxito</h5>
         </div>
         <div class="modal-body">
-          <form [formGroup]="form">
-            <div class="mb-3">
-              <label for="usuario" class="form-label">Usuario</label>
-              <select formControlName="id_usuario" class="form-select">
-                <option [value]="null" disabled>Seleccione un usuario</option>
-                <option *ngFor="let usuario of usuarios" [value]="usuario.idUsuario">
-                  {{ usuario.nombre }}
-                </option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="libro" class="form-label">Libro</label>
-              <select formControlName="id_libro" class="form-select">
-                <option [value]="null" disabled>Seleccione un libro</option>
-                <option *ngFor="let libro of libros" [value]="libro.idLibro">
-                  {{ libro.titulo }}
-                </option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="prestamo" class="form-label">Préstamo</label>
-              <select formControlName="id_prestamo" class="form-select">
-                <option [value]="null" disabled>Seleccione un préstamo</option>
-                <option *ngFor="let prestamo of prestamos" [value]="prestamo.idPrestamo">
-                  Préstamo #{{ prestamo.idPrestamo }}
-                </option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="monto" class="form-label">Monto</label>
-              <input
-                type="number"
-                formControlName="monto"
-                class="form-control"
-                placeholder="Ingrese el monto de la deuda"
-              />
-              <div
-                *ngIf="form.get('monto')?.hasError('required') && form.get('monto')?.touched"
-                class="text-danger"
-              >
-                El monto es requerido.
-              </div>
-            </div>
-
-            <div class="mb-3">
-              <label for="estado" class="form-label">Estado</label>
-              <select formControlName="estado" class="form-select">
-                <option value="" disabled>Seleccione el estado</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="pagada">Pagada</option>
-              </select>
-              <div
-                *ngIf="form.get('estado')?.hasError('required') && form.get('estado')?.touched"
-                class="text-danger"
-              >
-                El estado es requerido.
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            (click)="cerrarModal()"
-          >
-            Cerrar
-          </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            (click)="guardarActualizar()"
-          >
-            Guardar
-          </button>
+          <p>Se ha realizado el respectivo pago de la multa.</p>
+          <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Aceptar</button>
         </div>
       </div>
     </div>
