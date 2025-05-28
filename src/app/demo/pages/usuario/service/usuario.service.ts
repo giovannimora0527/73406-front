@@ -10,6 +10,8 @@ import { environment } from 'src/environments/environment';
 })
 export class UsuarioService {
   private api = `usuario`;
+  http: any;
+  url: any;
 
   constructor(private backendService: BackendService) { 
     this.testService();
@@ -30,4 +32,11 @@ export class UsuarioService {
   actualizarUsuario(usuario: Usuario): Observable<UsuarioRs> {
     return this.backendService.post(environment.apiUrl, this.api, "actualizar-usuario", usuario);
   }
+  
+  // CREAR MASIVO DE USUARIOS 
+    cargarUsuariosDesdeCSV(archivo: File): Observable<any> {
+      const formData = new FormData();
+      formData.append('archivo', archivo);
+      return this.backendService.postFile(environment.apiUrl, this.api, "cargar-csv", formData);
+    }
 }

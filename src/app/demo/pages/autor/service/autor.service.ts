@@ -29,4 +29,12 @@ export class AutorService {
   getNacionalidades(): Observable<Nacionalidad[]> {
     return this.backendService.get(environment.apiUrl, 'nacionalidad', 'listar');
   }
+
+  // CARGA MASIVA DE AUTORES
+cargarAutoresDesdeCSV(archivo: File): Observable<any> {
+  const formData = new FormData();
+  formData.append('archivo', archivo);
+  return this.backendService.postFile(environment.apiUrl, this.api, "cargar-csv", formData);
+}
+
 }

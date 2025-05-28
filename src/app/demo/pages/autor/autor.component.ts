@@ -27,6 +27,9 @@ export class AutorComponent {
   modoFormulario: string = '';
   titleModal: string = '';
   msjSpinner: string = 'Cargando';
+  archivoSeleccionado: File | null = null;
+  errorCargue: string = "";
+  tieneError: boolean = false;
 
   autorSelected: Autor;
 
@@ -168,6 +171,80 @@ export class AutorComponent {
       }
     }
   }
+
+  onFileSelected(event: any) {
+  const file = event.target.files[0];
+  if (file) {
+    if (file.name.endsWith('.csv')) {
+      this.archivoSeleccionado = file;
+    } else {
+      this.showMessage('Error', 'Solo se permiten archivos CSV', 'error');
+      event.target.value = null; // Limpiar el input
+    }
+  }
+}
+
+cargarArchivo() {
+  if (!this.archivoSeleccionado) {
+    this.showMessage('Error', 'Debe seleccionar un archivo CSV', 'error');
+    return;
+  }
+
+  this.spinner.show();
+  this.msjSpinner = "Procesando archivo CSV...";
+
+  this.autorService.cargarAutoresDesdeCSV(this.archivoSeleccionado).subscribe({
+    next: (respuesta) => {
+      this.spinner.hide();
+
+      const autoresGuardados = respuesta.autoresGuardados || 0;
+      const errores = respuesta.errores || [];
+
+      let mensaje = `Se han importado ${autoresGuardados} autores correctamente.`;
+
+      if (errores.length > 0) {
+        mensaje += `\n\nSe encontraron ${errores.length} errores:`;
+
+        const erroresMostrados = errores.slice(0, 5);
+        mensaje += erroresMostrados.map(error => `\n- ${error}`).join('');
+
+        if (errores.length > 5) {
+          mensaje += `\n...y ${errores.length - 5} errores más.`;
+        }
+      }
+      this.tieneError = false;
+
+      this.showMessage(
+        'Carga de autores',
+        mensaje,
+        errores.length > 0 ? 'warning' : 'success'
+      );
+
+      this.cargarListaAutores(); // refrescar lista
+      this.archivoSeleccionado = null;
+
+      const fileInput = document.getElementById('csvFileAutorInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.value = '';
+      }
+
+      const modalElement = document.getElementById('cargarCsvAutorModal');
+      if (modalElement) {
+        const modal = bootstrap.Modal.getInstance(modalElement);
+        if (modal) {
+          modal.hide();
+        }
+      }
+    },
+    error: (error) => {
+      this.spinner.hide();
+      this.errorCargue = error.error.message;
+      this.tieneError = true;
+      this.showMessage('Error', error.error.message || 'Error al procesar el archivo', 'error');
+    }
+  });
+}
+
 
   public showMessage(title: string, text: string, icon: SweetAlertIcon) {
     Swal.fire({

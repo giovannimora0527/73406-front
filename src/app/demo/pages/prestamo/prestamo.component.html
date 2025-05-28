@@ -17,8 +17,7 @@
       <div class="row">
         <div class="col">
           <button class="btn btn-outline-primary btn-sm" (click)="crearPrestamoModal('C')" title="Crear un préstamo nuevo">
-            <i class="fa fa-plus"></i>
-            &nbsp;Nuevo Préstamo
+            <i class="fa fa-plus"></i> &nbsp;Nuevo Préstamo
           </button>
         </div>
       </div>
@@ -57,9 +56,11 @@
                           'badge bg-warning text-white': prestamo.estado === 'PRESTADO',
                           'badge bg-success text-white': prestamo.estado === 'DEVUELTO',
                           'badge bg-danger text-white': prestamo.estado === 'VENCIDO'
-                        }" style="font-size: 0.9rem; padding: 0.5em 0.75em; border-radius: 1rem; color: white;">
-                          {{ prestamo.estado }}
-                        </span>
+                        }"
+                      style="font-size: 0.9rem; padding: 0.5em 0.75em; border-radius: 1rem; color: white;">
+                              {{ prestamo.estado }}
+                            </span>
+
                       </td>
                       <td>
                         <span *ngIf="prestamo.fechaEntrega; else noEntregado">
@@ -104,23 +105,10 @@
       <div class="modal-body">
         <form [formGroup]="form" (ngSubmit)="guardarActualizarPrestamo()">
           <div class="row">
-            <!-- Campo solo lectura para el nombre del usuario (en modo edición) -->
-            <div class="col-12" *ngIf="modoEdicion">
-              <div class="mb-3">
-                <label for="nombreUsuario" class="form-label">Usuario</label>
-                <input type="text" class="form-control" id="nombreUsuario" [value]="prestamoSelected?.usuario?.nombre" readonly>
-              </div>
-            </div>
-        
-            <!-- Campo solo lectura para el título del libro (en modo edición) -->
-            <div class="col-12" *ngIf="modoEdicion">
-              <div class="mb-3">
-                <label for="tituloLibro" class="form-label">Libro</label>
-                <input type="text" class="form-control" id="tituloLibro" [value]="prestamoSelected?.libro?.titulo" readonly>
-              </div>
-            </div>
-        
-            <!-- Campo para seleccionar el usuario (solo si NO es edición) -->
+            <!-- Modo Edición: Campos solo lectura -->
+           
+
+            <!-- Modo Creación: Selección de usuario y libro -->
             <div class="col-12" *ngIf="!modoEdicion">
               <div class="mb-3">
                 <label for="idUsuario" class="form-label">Seleccionar Usuario</label>
@@ -133,8 +121,6 @@
                 </div>
               </div>
             </div>
-        
-            <!-- Campo para seleccionar el libro (solo si NO es edición) -->
             <div class="col-12" *ngIf="!modoEdicion">
               <div class="mb-3">
                 <label for="idLibro" class="form-label">Seleccionar Libro</label>
@@ -147,39 +133,30 @@
                 </div>
               </div>
             </div>
-        
-            <!-- Campo para editar la fecha de préstamo -->
-            <div class="col-12">
+
+            <!-- Fechas (solo disponibles en creación) -->
+            <div class="col-12" *ngIf="!modoEdicion">
               <div class="mb-3">
                 <label for="fechaPrestamo" class="form-label">Fecha de Préstamo</label>
                 <input type="date" class="form-control" id="fechaPrestamo" formControlName="fechaPrestamo"
-                  [ngClass]="{ 'is-invalid': f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty) }" />
+                  [ngClass]="{ 'is-invalid': f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty) }">
                 <div *ngIf="f['fechaPrestamo'].invalid && (f['fechaPrestamo'].touched || f['fechaPrestamo'].dirty)" class="invalid-feedback">
                   La fecha de préstamo es obligatoria.
                 </div>
               </div>
             </div>
-        
-            <!-- Campo para editar la fecha de devolución -->
-            <div class="col-12">
+            <div class="col-12" *ngIf="!modoEdicion">
               <div class="mb-3">
                 <label for="fechaDevolucion" class="form-label">Fecha de Devolución</label>
                 <input type="date" class="form-control" id="fechaDevolucion" formControlName="fechaDevolucion"
-                  [ngClass]="{ 'is-invalid': f['fechaDevolucion'].invalid && (f['fechaDevolucion'].touched || f['fechaDevolucion'].dirty) }" />
+                  [ngClass]="{ 'is-invalid': f['fechaDevolucion'].invalid && (f['fechaDevolucion'].touched || f['fechaDevolucion'].dirty) }">
                 <div *ngIf="f['fechaDevolucion'].invalid && (f['fechaDevolucion'].touched || f['fechaDevolucion'].dirty)" class="invalid-feedback">
                   La fecha de devolución es obligatoria.
                 </div>
               </div>
             </div>
-            <!-- Campo solo lectura para el estado (en modo edición) -->
-            <div class="col-12" *ngIf="modoEdicion">
-              <div class="mb-3">
-                <label for="nombreEstado" class="form-label">Estado</label>
-                <input type="text" class="form-control" id="nombreEstado" [value]="prestamoSelected?.estado" readonly>
-              </div>
-            </div>
-        
-            <!-- Campo para editar la fecha de entrega (solo si es edición) -->
+
+            <!-- Solo se puede editar la fecha de entrega en modo edición -->
             <div class="col-12" *ngIf="modoFormulario === 'E'">
               <div class="mb-3">
                 <label for="fechaEntrega" class="form-label">Fecha de Entrega</label>
@@ -187,8 +164,8 @@
               </div>
             </div>
           </div>
-        
-          <!-- Botones de acción -->
+
+          <!-- Botones -->
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="submit" class="btn btn-primary" [disabled]="!form.valid">

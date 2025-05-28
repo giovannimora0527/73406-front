@@ -1,159 +1,270 @@
+<!-- Spinner de carga -->
 <ngx-spinner
-  bdColor="rgba(51,51,51,0.8)"
+  bdColor="rgba(0,0,0,0.5)"
   size="medium"
   color="#fff"
-  type="ball-scale-multiple"
+  type="ball-clip-rotate"
   [fullScreen]="true">
-  {{msjSpinner}}...
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;">
+    <p style="color:white;font-size:1.2rem;margin-top:1rem;">{{ msjSpinner }}</p>
+  </div>
 </ngx-spinner>
 
 <div class="container">
-    <div class="card">
-        <div class="card-header">
-            <div class="row">
-              <div class="col">
-                <button class="btn btn-outline-primary btn-sm" (click)="crearModal('C')" title="Crear un libro nuevo">
-                  <i class="fa fa-plus"></i>
-                  &nbsp;Nuevo
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="row">
-              <div class="col">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="table table-responsive">
-                      <table class="table table-responsive table-stripped">
-                        <thead>
-                          <tr>
-                            <th>Título</th>
-                            <th>Autor</th>
-                            <th>Año Publicación</th>
-                            <th>Existencias</th>
-                            <th>Categoria</th>
-                            <th class="text-center">Opciones</th>
-                          </tr>
-                        </thead>
-                        <tbody *ngIf="libros.length === 0">
-                          <tr>
-                            <td colspan="6" class="text-center">No hay registros disponibles</td>
-                          </tr>
-                        </tbody>
-                        <tbody *ngIf="libros.length > 0">
-                          <tr *ngFor="let libro of libros">
-                            <td>
-                              {{ libro.titulo }}
-                            </td>
-                            <td>
-                              {{ libro.autor.nombre }}
-                            </td>
-                            <td>
-                              {{ libro.anioPublicacion }}
-                            </td>
-                            <td>
-                              {{ libro.existencias }}
-                            </td>
-                            <td>
-                              {{ libro.categoria.nombre }}
-                            </td>
-                            <td class="text-center">
-                              <button class="btn btn-outline-primary btn-sm" title="Editar libro" (click)="abrirModoEdicion(libro)">
-                                <i class="fa fa-edit"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+  <div class="card">
+    <!-- CABECERA -->
+    <div class="card-header">
+      <div class="row">
+        <div class="col">
+          <!-- Botón Nuevo -->
+          <button
+            type="button"
+            class="btn btn-outline-primary btn-sm"
+            (click)="crearModal('C')"
+            title="Crear un libro nuevo">
+            <i class="fa fa-plus"></i>
+            &nbsp;Nuevo
+          </button>
+
+          <!-- Botón Cargar CSV -->
+          <button
+            type="button"
+            class="btn btn-outline-success btn-sm ms-2"
+            data-bs-toggle="modal"
+            data-bs-target="#cargarCsvLibroModal"
+            title="Cargar libros desde CSV">
+            <i class="fa fa-upload"></i>
+            &nbsp;Cargar CSV
+          </button>
+        </div>
+      </div>
     </div>
-</div>
 
+    <!-- TABLA -->
+    <div class="card-body">
+      <div class="row">
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+              <div class="table table-responsive">
+                <table class="table table-responsive table-striped">
+                  <thead>
+                    <tr>
+                      <th>Título</th>
+                      <th>Autor</th>
+                      <th>Año Publicación</th>
+                      <th>Existencias</th>
+                      <th>Categoría</th>
+                      <th class="text-center">Opciones</th>
+                    </tr>
+                  </thead>
 
+                  <!-- Sin registros -->
+                  <tbody *ngIf="libros.length === 0">
+                    <tr>
+                      <td colspan="6" class="text-center">No hay registros disponibles</td>
+                    </tr>
+                  </tbody>
 
-<div
-  class="modal fade"
-  id="crearModal"
-  tabindex="-1"
-  aria-labelledby="crearModalLabel"
-  data-bs-backdrop="static"
-  data-bs-keyboard="false"
->
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="crearModalLabel">{{ titleModal }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <!-- Con registros -->
+                  <tbody *ngIf="libros.length > 0">
+                    <tr *ngFor="let libro of libros">
+                      <td>{{ libro.titulo }}</td>
+                      <td>{{ libro.autor.nombre }}</td>
+                      <td>{{ libro.anioPublicacion }}</td>
+                      <td>{{ libro.existencias }}</td>
+                      <td>{{ libro.categoria.nombre }}</td>
+                      <td class="text-center">
+                        <button
+                          type="button"
+                          class="btn btn-outline-primary btn-sm"
+                          title="Editar libro"
+                          (click)="abrirModoEdicion(libro)">
+                          <i class="fa fa-edit"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="modal-body">
-        <form [formGroup]="form">
+    </div>
+  </div>
+
+  <!-- MODAL CREAR / EDITAR LIBRO -->
+  <div class="modal fade"
+       id="crearModal"
+       tabindex="-1"
+       aria-labelledby="crearModalLabel"
+       data-bs-backdrop="static"
+       data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="crearModalLabel">{{ titleModal }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <form [formGroup]="form">
+            <!-- Título -->
             <div class="mb-3">
-                <label for="titulo" class="form-label">Titulo</label>
-                <input
-                  type="text"
-                  formControlName="titulo"
-                  class="form-control"
-                  id="titulo"
-                  placeholder="Ingrese el titulo completo del libro"
-                  [ngModel]="libroSelected?.titulo"
-                />
-                <div *ngIf="form.get('titulo')?.hasError('required') && form.get('titulo')?.touched" class="text-danger">
-                  El título del libro es requerido.
-                </div>
+              <label for="titulo" class="form-label">Título</label>
+              <input
+                type="text"
+                id="titulo"
+                class="form-control"
+                formControlName="titulo"
+                placeholder="Ingrese el título completo del libro"/>
+              <div
+                *ngIf="form.get('titulo')?.invalid && form.get('titulo')?.touched"
+                class="text-danger">
+                El título del libro es requerido.
               </div>
+            </div>
 
-              <div class="mb-3">
-                <label for="existencias" class="form-label">Existencias</label>
-                <input
-                  type="number"
-                  formControlName="existencias"
-                  class="form-control"
-                  id="existencias"
-                  placeholder="Ingrese la cantidad existencias del libro"
-                  [ngModel]="libroSelected?.existencias"
-                />
-                <div *ngIf="form.get('existencias')?.hasError('required') && form.get('existencias')?.touched" class="text-danger">
-                  La cantidad de existencias del libro es requerido.
-                </div>
+            <!-- Existencias -->
+            <div class="mb-3">
+              <label for="existencias" class="form-label">Existencias</label>
+              <input
+                type="number"
+                id="existencias"
+                class="form-control"
+                formControlName="existencias"
+                placeholder="Ingrese la cantidad de existencias"
+                [min]="1"
+                (input)="onInput($event)"/>
+              <div
+                *ngIf="form.get('existencias')?.invalid && form.get('existencias')?.touched"
+                class="text-danger">
+                La cantidad de existencias es requerida.
               </div>
+            </div>
 
-              <div class="mb-3">
-                <label for="anioPublicacion" class="form-label">Año Publicación</label>
-                <input
-                  type="date"
-                  formControlName="anioPublicacion"
-                  class="form-control"
-                  id="anioPublicacion"
-                  placeholder="Ingrese el año de publicación completo del libro"
-                  [ngModel]="libroSelected?.anioPublicacion"
-                />
-                <div *ngIf="form.get('anioPublicacion')?.hasError('required') && form.get('anioPublicacion')?.touched" class="text-danger">
-                  El año de publicación del libro es requerido.
-                </div>
+            <!-- Año de publicación -->
+            <div class="mb-3">
+              <label for="anioPublicacion" class="form-label">Año de Publicación</label>
+              <input
+                type="number"
+                id="anioPublicacion"
+                class="form-control"
+                formControlName="anioPublicacion"
+                placeholder="Ingrese el año de publicación"
+                [min]="1"
+                [max]="currentYear"
+                (input)="onInput($event)"/>
+              <div
+                *ngIf="form.get('anioPublicacion')?.invalid && form.get('anioPublicacion')?.touched"
+                class="text-danger">
+                El año de publicación es requerido.
               </div>
+            </div>
 
-              <div class="mb-3">
-                <label for="autor" class="form-label">Autor</label>
-                <select class="form-select">
-                    <option [value]="" disabled>Seleccione un autor</option>
-                    <option [value]="autor.idAutor" *ngFor="let autor of autores"
-                    >{{autor.nombre}}</option>
-                </select>
-                <div *ngIf="form.get('anioPublicacion')?.hasError('required') && form.get('anioPublicacion')?.touched" class="text-danger">
-                  El autor del libro es requerido.
-                </div>
+            <!-- Categoría -->
+            <div class="mb-3">
+              <label for="categoriaId" class="form-label">Categoría</label>
+              <select
+                id="categoriaId"
+                class="form-select"
+                formControlName="categoriaId">
+                <option [value]="''" disabled>Seleccione una categoría</option>
+                <option
+                  *ngFor="let c of categorias"
+                  [value]="c.categoriaId">
+                  {{ c.nombre }}
+                </option>
+              </select>
+              <div
+                *ngIf="form.get('categoriaId')?.invalid && form.get('categoriaId')?.touched"
+                class="text-danger">
+                La categoría es requerida.
               </div>
-        </form>
+            </div>
+
+            <!-- Autor -->
+            <div class="mb-3">
+              <label for="autorId" class="form-label">Autor</label>
+              <select
+                id="autorId"
+                class="form-select"
+                formControlName="autorId">
+                <option [value]="''" disabled>Seleccione un autor</option>
+                <option
+                  *ngFor="let a of autores"
+                  [value]="a.idAutor">
+                  {{ a.nombre }}
+                </option>
+              </select>
+              <div
+                *ngIf="form.get('autorId')?.invalid && form.get('autorId')?.touched"
+                class="text-danger">
+                El autor es requerido.
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+          <button type="button" class="btn btn-primary" (click)="guardarActualizar()">Guardar</button>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-        <button type="button" class="btn btn-primary" (click)="guardarActualizar()">Guardar</button>
+    </div>
+  </div>
+
+  <!-- MODAL CARGAR CSV -->
+  <div class="modal fade"
+       id="cargarCsvLibroModal"
+       tabindex="-1"
+       aria-labelledby="cargarCsvLibroModalLabel"
+       data-bs-backdrop="static"
+       data-bs-keyboard="false">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="cargarCsvLibroModalLabel">Cargar Libros desde CSV</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Selector de archivo -->
+          <div class="mb-3">
+            <label for="csvFileLibroInput" class="form-label">Seleccione el archivo CSV</label>
+            <input
+              type="file"
+              id="csvFileLibroInput"
+              class="form-control"
+              accept=".csv"
+              (change)="onFileSelected($event)"/>
+            <div class="form-text">
+              El archivo debe contener: <strong>titulo, autorId, anioPublicacion, categoriaId, existencias</strong>.
+            </div>
+          </div>
+
+          <!-- Reglas / formato -->
+          <div class="alert alert-info">
+            <h6 class="mb-2">Formato esperado:</h6>
+            <p class="mb-1">• Encabezados en la primera línea</p>
+            <p class="mb-1">• <code>autorId</code> y <code>categoriaId</code> deben existir</p>
+            <p class="mb-1">• <code>titulo</code> debe ser único para cada autor</p>
+          </div>
+
+          <!-- Botón disparar carga -->
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="cargarArchivo()">
+            <i class="fa fa-upload"></i>
+            &nbsp;Cargar libros
+          </button>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
       </div>
     </div>
   </div>
