@@ -52,6 +52,14 @@ export const NavigationItems: NavigationItem[] = [
         url: '/inicio/prestamos',
         icon: 'feather icon-users',
         classes: 'nav-item'
+      },
+      {
+        id: 'deudas',
+        title: 'Gestión de deudas y multas',
+        type: 'item',
+        url: '/inicio/deudas',
+        icon: 'feather icon-dollar-sign',
+        classes: 'nav-item'
       }
     ]
   },

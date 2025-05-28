@@ -20,7 +20,8 @@ export const routes: Routes = [
       { path: 'usuarios', component: UsuarioComponent, data: { title: 'Usuarios' }},
       { path: 'autores', component: AutorComponent, data: { title: 'Autores' }},
       { path: 'libros', component: LibroComponent, data: { title: 'Libros' }} ,
-      { path: 'prestamos', component: PrestamoComponent, data: { title: 'Prestamos' }}     
+      { path: 'prestamos', component: PrestamoComponent, data: { title: 'Prestamos' }}, 
+      { path: 'deuda', component: PrestamoComponent, data: { title: 'Deudas' }}     
     ]
   },
   { path: '**', redirectTo: 'inicio' }
