@@ -11,7 +11,7 @@ import { environment } from 'src/environments/environment';
 export class UsuarioService {
   private api = `usuario`;
 
-  constructor(private backendService: BackendService) { 
+  constructor(private backendService: BackendService) {
     this.testService();
   }
 
@@ -23,11 +23,19 @@ export class UsuarioService {
     return this.backendService.get(environment.apiUrl, this.api, "listar");
   }
 
-  guardarUsuario(usuario: Usuario): Observable<UsuarioRs> {
+  guardarUsuarioNuevo(usuario: Usuario): Observable<UsuarioRs> {
     return this.backendService.post(environment.apiUrl, this.api, "guardar-usuario", usuario);
   }
 
   actualizarUsuario(usuario: Usuario): Observable<UsuarioRs> {
     return this.backendService.post(environment.apiUrl, this.api, "actualizar-usuario", usuario);
+  }
+
+  //  Lógica agregada para cargue masivo desde archivo CSV
+  cargarUsuariosCsv(archivo: File): Observable<UsuarioRs> {
+    const formData = new FormData();
+    formData.append('file', archivo);
+
+    return this.backendService.postFormData(environment.apiUrl, this.api, 'cargar-usuarios', formData);
   }
 }

@@ -5,7 +5,6 @@ import { provideAnimations } from "@angular/platform-browser/animations";
 import { provideRouter, withEnabledBlockingInitialNavigation, withHashLocation, withInMemoryScrolling, withRouterConfig, withViewTransitions } from "@angular/router";
 import { routes } from './app-routing.module';
 import { HeadersInterceptor } from "./interceptors/headers.interceptor";
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
     providers: [
@@ -28,6 +27,6 @@ export const appConfig: ApplicationConfig = {
         provide: HTTP_INTERCEPTORS,
         useClass: HeadersInterceptor,
         multi: true, // Permite múltiples interceptores
-      }, provideAnimationsAsync()
+      }
     ]
   };

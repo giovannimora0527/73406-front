@@ -1,16 +1,12 @@
-import { Usuario } from './usuario';
-import { Libro } from './libro';
+import { Libro } from "./libro";
+import { Usuario } from "./usuario";
 
-
-export interface Prestamo {
-    idPrestamo?: number;
-    usuario?: Usuario;
-    idUsuario: number;
-    libro?: Libro;
-    idLibro: number;
-    fechaPrestamo: string;
-    fechaDevolucion: string;
-    estado?: string;
-    fechaEntrega?: string;
-  }
-  
+export class Prestamo {
+    usuario: Usuario;
+    libro: Libro;
+    fechaDevolucion: Date;
+    fechaPrestamo: Date;
+    estado: string;
+    idPrestamo: number;
+    fechaEntrega: string;
+}
